@@ -4,7 +4,7 @@ extends Node
 
 func _ready():
 	# Configure the global logger
-	Logger.set_global_level(Logger.LogLevel.DEBUG)
+	Logger.set_global_level(LogLevel.Level.DEBUG)
 	Logger.set_colors_enabled(true)
 	Logger.set_timestamps_enabled(true)
 	Logger.set_file_logging_enabled(true, "user://my_game.log")
@@ -17,9 +17,9 @@ func _ready():
 	Logger.trace("This trace message won't show (below global level)")
 	
 	# Create named loggers for different systems
-	var network_logger = Logger.get_logger("Network", Logger.LogLevel.INFO)
-	var ai_logger = Logger.get_logger("AI", Logger.LogLevel.DEBUG)
-	var physics_logger = Logger.get_logger("Physics", Logger.LogLevel.WARN)
+	var network_logger = Logger.get_logger("Network", LogLevel.Level.INFO)
+	var ai_logger = Logger.get_logger("AI", LogLevel.Level.DEBUG)
+	var physics_logger = Logger.get_logger("Physics", LogLevel.Level.WARN)
 	
 	# Use named loggers
 	network_logger.info("Connected to server")
@@ -66,7 +66,7 @@ func demonstrate_logger_management():
 	save_logger.info("Game saved successfully")
 	
 	# Change log level for specific logger
-	ui_logger.set_level(Logger.LogLevel.WARN)
+	ui_logger.set_level(LogLevel.Level.WARN)
 	ui_logger.info("This won't show (below logger's level)")
 	ui_logger.warn("This will show")
 	
