@@ -12,3 +12,5 @@ jobs:
           paths: 'res://tests'
           timeout: 10
           version: 'v5.0.5'
+          publish-report: false
+          report-name: 'log4godot-test-report.xml'
