@@ -1,25 +1,25 @@
 # test_log_formatter.gd
-# Unit tests for LogFormatter class
-extends GutTest
+# Unit tests for LogFormatter class using gdUnit4
+extends GdUnitTestSuite
 
 var formatter: LogFormatter
 
-func before_each():
+func before_test():
 	formatter = LogFormatter.new()
 
-func after_each():
+func after_test():
 	formatter = null
 
 # Test timestamp functionality
 func test_timestamps_enabled_by_default():
-	assert_true(formatter.enable_timestamps, "Timestamps should be enabled by default")
+	assert_bool(formatter.enable_timestamps).is_true()
 
 func test_set_timestamps_enabled():
 	formatter.set_timestamps_enabled(false)
-	assert_false(formatter.enable_timestamps, "Should disable timestamps")
+	assert_bool(formatter.enable_timestamps).is_false()
 	
 	formatter.set_timestamps_enabled(true)
-	assert_true(formatter.enable_timestamps, "Should enable timestamps")
+	assert_bool(formatter.enable_timestamps).is_true()
 
 # Test message formatting without timestamps
 func test_format_message_without_timestamps():
@@ -27,32 +27,32 @@ func test_format_message_without_timestamps():
 	
 	var result = formatter.format_message("TestLogger", LogLevel.Level.INFO, "Test message")
 	var expected = "[INFO] [TestLogger] Test message"
-	assert_eq(result, expected, "Should format message without timestamp")
+	assert_str(result).is_equal(expected)
 
 func test_format_message_main_logger_without_timestamps():
 	formatter.set_timestamps_enabled(false)
 	
 	var result = formatter.format_message("Main", LogLevel.Level.ERROR, "Error message")
 	var expected = "[ERROR] Error message"
-	assert_eq(result, expected, "Should format Main logger message without logger name")
+	assert_str(result).is_equal(expected)
 
 func test_format_message_different_levels_without_timestamps():
 	formatter.set_timestamps_enabled(false)
 	
 	var trace_result = formatter.format_message("Test", LogLevel.Level.TRACE, "Trace msg")
-	assert_true(trace_result.contains("[TRACE]"), "Should contain TRACE level")
+	assert_str(trace_result).contains("[TRACE]")
 	
 	var debug_result = formatter.format_message("Test", LogLevel.Level.DEBUG, "Debug msg")
-	assert_true(debug_result.contains("[DEBUG]"), "Should contain DEBUG level")
+	assert_str(debug_result).contains("[DEBUG]")
 	
 	var warn_result = formatter.format_message("Test", LogLevel.Level.WARN, "Warn msg")
-	assert_true(warn_result.contains("[WARN]"), "Should contain WARN level")
+	assert_str(warn_result).contains("[WARN]")
 	
 	var error_result = formatter.format_message("Test", LogLevel.Level.ERROR, "Error msg")
-	assert_true(error_result.contains("[ERROR]"), "Should contain ERROR level")
+	assert_str(error_result).contains("[ERROR]")
 	
 	var fatal_result = formatter.format_message("Test", LogLevel.Level.FATAL, "Fatal msg")
-	assert_true(fatal_result.contains("[FATAL]"), "Should contain FATAL level")
+	assert_str(fatal_result).contains("[FATAL]")
 
 # Test message formatting with timestamps
 func test_format_message_with_timestamps():
@@ -64,10 +64,10 @@ func test_format_message_with_timestamps():
 	var timestamp_regex = RegEx.new()
 	timestamp_regex.compile(r"\[\d{2}:\d{2}:\d{2}\.\d{3}\]")
 	
-	assert_true(timestamp_regex.search(result) != null, "Should contain timestamp format")
-	assert_true(result.contains("[INFO]"), "Should contain log level")
-	assert_true(result.contains("[TestLogger]"), "Should contain logger name")
-	assert_true(result.contains("Test message"), "Should contain the message")
+	assert_object(timestamp_regex.search(result)).is_not_null()
+	assert_str(result).contains("[INFO]")
+	assert_str(result).contains("[TestLogger]")
+	assert_str(result).contains("Test message")
 
 func test_format_message_with_timestamps_main_logger():
 	formatter.set_timestamps_enabled(true)
@@ -77,15 +77,15 @@ func test_format_message_with_timestamps_main_logger():
 	var timestamp_regex = RegEx.new()
 	timestamp_regex.compile(r"\[\d{2}:\d{2}:\d{2}\.\d{3}\]")
 	
-	assert_true(timestamp_regex.search(result) != null, "Should contain timestamp format")
-	assert_true(result.contains("[WARN]"), "Should contain log level")
-	assert_false(result.contains("[Main]"), "Should not contain Main logger name")
-	assert_true(result.contains("Warning message"), "Should contain the message")
+	assert_object(timestamp_regex.search(result)).is_not_null()
+	assert_str(result).contains("[WARN]")
+	assert_str(result).not_contains("[Main]")
+	assert_str(result).contains("Warning message")
 
 # Test timestamp format
 func test_timestamp_format():
 	var expected_format = "[%02d:%02d:%02d.%03d]"
-	assert_eq(formatter.timestamp_format, expected_format, "Should have correct timestamp format")
+	assert_str(formatter.timestamp_format).is_equal(expected_format)
 
 # Test empty and special messages
 func test_format_empty_message():
@@ -93,21 +93,21 @@ func test_format_empty_message():
 	
 	var result = formatter.format_message("TestLogger", LogLevel.Level.INFO, "")
 	var expected = "[INFO] [TestLogger] "
-	assert_eq(result, expected, "Should handle empty message")
+	assert_str(result).is_equal(expected)
 
 func test_format_message_with_spaces():
 	formatter.set_timestamps_enabled(false)
 	
 	var result = formatter.format_message("Test Logger", LogLevel.Level.INFO, "Message with spaces")
 	var expected = "[INFO] [Test Logger] Message with spaces"
-	assert_eq(result, expected, "Should handle logger names and messages with spaces")
+	assert_str(result).is_equal(expected)
 
 func test_format_message_with_special_characters():
 	formatter.set_timestamps_enabled(false)
 	
 	var result = formatter.format_message("Test&Logger", LogLevel.Level.INFO, "Message with @#$%")
 	var expected = "[INFO] [Test&Logger] Message with @#$%"
-	assert_eq(result, expected, "Should handle special characters")
+	assert_str(result).is_equal(expected)
 
 # Test message parts assembly
 func test_message_parts_order():
@@ -116,9 +116,9 @@ func test_message_parts_order():
 	var result = formatter.format_message("TestLogger", LogLevel.Level.DEBUG, "Test message")
 	var parts = result.split(" ")
 	
-	assert_eq(parts[0], "[DEBUG]", "First part should be log level")
-	assert_eq(parts[1], "[TestLogger]", "Second part should be logger name")
-	assert_eq(parts[2], "Test", "Third part should start with message")
+	assert_str(parts[0]).is_equal("[DEBUG]")
+	assert_str(parts[1]).is_equal("[TestLogger]")
+	assert_str(parts[2]).is_equal("Test")
 
 func test_message_parts_order_with_timestamp():
 	formatter.set_timestamps_enabled(true)
@@ -127,9 +127,9 @@ func test_message_parts_order_with_timestamp():
 	var parts = result.split(" ")
 	
 	# First part should be timestamp
-	assert_true(parts[0].begins_with("[") and parts[0].ends_with("]"), "First part should be timestamp in brackets")
-	assert_eq(parts[1], "[DEBUG]", "Second part should be log level")
-	assert_eq(parts[2], "[TestLogger]", "Third part should be logger name")
+	assert_bool(parts[0].begins_with("[") and parts[0].ends_with("]")).is_true()
+	assert_str(parts[1]).is_equal("[DEBUG]")
+	assert_str(parts[2]).is_equal("[TestLogger]")
 
 # Test consistency across multiple calls
 func test_formatting_consistency():
@@ -138,7 +138,7 @@ func test_formatting_consistency():
 	var result1 = formatter.format_message("Test", LogLevel.Level.INFO, "Same message")
 	var result2 = formatter.format_message("Test", LogLevel.Level.INFO, "Same message")
 	
-	assert_eq(result1, result2, "Same inputs should produce same outputs")
+	assert_str(result1).is_equal(result2)
 
 # Test private timestamp formatting method indirectly
 func test_timestamp_format_indirectly():
@@ -155,4 +155,4 @@ func test_timestamp_format_indirectly():
 	var pattern = RegEx.new()
 	pattern.compile(r"^\[\d{2}:\d{2}:\d{2}\.\d{3}\]$")
 	
-	assert_true(pattern.search(timestamp) != null, "Timestamp should match expected format")
+	assert_object(pattern.search(timestamp)).is_not_null()

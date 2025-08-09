@@ -20,4 +20,4 @@ Logger="*res://addons/log4godot/logger.gd"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/gut/plugin.cfg", "res://addons/log4godot/plugin.cfg")
+enabled=PackedStringArray("res://addons/gdUnit4/plugin.cfg", "res://addons/log4godot/plugin.cfg")

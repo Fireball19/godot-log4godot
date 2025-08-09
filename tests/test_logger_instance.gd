@@ -1,6 +1,6 @@
 # test_logger_instance.gd
-# Unit tests for LoggerInstance class
-extends GutTest
+# Unit tests for LoggerInstance class using gdUnit4
+extends GdUnitTestSuite
 
 var logger_instance: LoggerInstance
 var mock_output: MockLogOutput
@@ -27,11 +27,11 @@ class MockLogOutput extends LogOutput:
 func mock_global_level_provider() -> LogLevel.Level:
 	return LogLevel.Level.TRACE
 
-func before_each():
+func before_test():
 	mock_output = MockLogOutput.new()
 	logger_instance = LoggerInstance.new("TestLogger", LogLevel.Level.INFO, mock_output, mock_global_level_provider)
 
-func after_each():
+func after_test():
 	if FileAccess.file_exists(test_file_path):
 		DirAccess.remove_absolute(test_file_path)
 	logger_instance = null
@@ -39,70 +39,70 @@ func after_each():
 
 # Test initialization
 func test_initialization():
-	assert_eq(logger_instance.name, "TestLogger", "Should set logger name")
-	assert_eq(logger_instance.log_level, LogLevel.Level.INFO, "Should set initial log level")
-	assert_eq(logger_instance.output, mock_output, "Should set output reference")
-	assert_not_null(logger_instance.global_level_provider, "Should set global level provider")
+	assert_str(logger_instance.name).is_equal("TestLogger")
+	assert_int(logger_instance.log_level).is_equal(LogLevel.Level.INFO)
+	assert_object(logger_instance.output).is_equal(mock_output)
+	assert_object(logger_instance.global_level_provider).is_not_null()
 
 # Test level setting and getting
 func test_set_get_level():
 	logger_instance.set_level(LogLevel.Level.ERROR)
-	assert_eq(logger_instance.get_level(), LogLevel.Level.ERROR, "Should update log level")
+	assert_int(logger_instance.get_level()).is_equal(LogLevel.Level.ERROR)
 	
 	logger_instance.set_level(LogLevel.Level.TRACE)
-	assert_eq(logger_instance.get_level(), LogLevel.Level.TRACE, "Should update to TRACE level")
+	assert_int(logger_instance.get_level()).is_equal(LogLevel.Level.TRACE)
 
 # Test level checking functions
 func test_is_trace_enabled():
 	logger_instance.set_level(LogLevel.Level.TRACE)
-	assert_true(logger_instance.is_trace_enabled(), "TRACE should be enabled when level is TRACE")
+	assert_bool(logger_instance.is_trace_enabled()).is_true()
 	
 	logger_instance.set_level(LogLevel.Level.DEBUG)
-	assert_false(logger_instance.is_trace_enabled(), "TRACE should be disabled when level is DEBUG")
+	assert_bool(logger_instance.is_trace_enabled()).is_false()
 
 func test_is_debug_enabled():
 	logger_instance.set_level(LogLevel.Level.DEBUG)
-	assert_true(logger_instance.is_debug_enabled(), "DEBUG should be enabled when level is DEBUG")
+	assert_bool(logger_instance.is_debug_enabled()).is_true()
 	
 	logger_instance.set_level(LogLevel.Level.INFO)
-	assert_false(logger_instance.is_debug_enabled(), "DEBUG should be disabled when level is INFO")
+	assert_bool(logger_instance.is_debug_enabled()).is_false()
 
 func test_is_info_enabled():
 	logger_instance.set_level(LogLevel.Level.INFO)
-	assert_true(logger_instance.is_info_enabled(), "INFO should be enabled when level is INFO")
+	assert_bool(logger_instance.is_info_enabled()).is_true()
 	
 	logger_instance.set_level(LogLevel.Level.WARN)
-	assert_false(logger_instance.is_info_enabled(), "INFO should be disabled when level is WARN")
+	assert_bool(logger_instance.is_info_enabled()).is_false()
 
 func test_is_warn_enabled():
 	logger_instance.set_level(LogLevel.Level.WARN)
-	assert_true(logger_instance.is_warn_enabled(), "WARN should be enabled when level is WARN")
+	assert_bool(logger_instance.is_warn_enabled()).is_true()
 	
 	logger_instance.set_level(LogLevel.Level.ERROR)
-	assert_false(logger_instance.is_warn_enabled(), "WARN should be disabled when level is ERROR")
+	assert_bool(logger_instance.is_warn_enabled()).is_false()
 
 func test_is_error_enabled():
 	logger_instance.set_level(LogLevel.Level.ERROR)
-	assert_true(logger_instance.is_error_enabled(), "ERROR should be enabled when level is ERROR")
+	assert_bool(logger_instance.is_error_enabled()).is_true()
 	
 	logger_instance.set_level(LogLevel.Level.FATAL)
-	assert_false(logger_instance.is_error_enabled(), "ERROR should be disabled when level is FATAL")
+	assert_bool(logger_instance.is_error_enabled()).is_false()
 
 func test_is_fatal_enabled():
 	logger_instance.set_level(LogLevel.Level.FATAL)
-	assert_true(logger_instance.is_fatal_enabled(), "FATAL should be enabled when level is FATAL")
+	assert_bool(logger_instance.is_fatal_enabled()).is_true()
 	
 	# FATAL is highest level, so it's always enabled when set
 
 func test_is_level_enabled_generic():
 	logger_instance.set_level(LogLevel.Level.WARN)
 	
-	assert_false(logger_instance.is_level_enabled(LogLevel.Level.TRACE), "TRACE should be disabled")
-	assert_false(logger_instance.is_level_enabled(LogLevel.Level.DEBUG), "DEBUG should be disabled")
-	assert_false(logger_instance.is_level_enabled(LogLevel.Level.INFO), "INFO should be disabled")
-	assert_true(logger_instance.is_level_enabled(LogLevel.Level.WARN), "WARN should be enabled")
-	assert_true(logger_instance.is_level_enabled(LogLevel.Level.ERROR), "ERROR should be enabled")
-	assert_true(logger_instance.is_level_enabled(LogLevel.Level.FATAL), "FATAL should be enabled")
+	assert_bool(logger_instance.is_level_enabled(LogLevel.Level.TRACE)).is_false()
+	assert_bool(logger_instance.is_level_enabled(LogLevel.Level.DEBUG)).is_false()
+	assert_bool(logger_instance.is_level_enabled(LogLevel.Level.INFO)).is_false()
+	assert_bool(logger_instance.is_level_enabled(LogLevel.Level.WARN)).is_true()
+	assert_bool(logger_instance.is_level_enabled(LogLevel.Level.ERROR)).is_true()
+	assert_bool(logger_instance.is_level_enabled(LogLevel.Level.FATAL)).is_true()
 
 # Test global level provider influence
 func test_global_level_override():
@@ -111,8 +111,8 @@ func test_global_level_override():
 	var logger_with_global = LoggerInstance.new("TestLogger", LogLevel.Level.DEBUG, mock_output, error_global_provider)
 	
 	# Even though logger level is DEBUG, global level is ERROR, so DEBUG should be disabled
-	assert_false(logger_with_global.is_debug_enabled(), "DEBUG should be disabled due to global level")
-	assert_true(logger_with_global.is_error_enabled(), "ERROR should be enabled")
+	assert_bool(logger_with_global.is_debug_enabled()).is_false()
+	assert_bool(logger_with_global.is_error_enabled()).is_true()
 
 # Test logging functions
 func test_trace_logging():
@@ -120,57 +120,57 @@ func test_trace_logging():
 	logger_instance.trace("Trace message")
 	
 	var last_msg = mock_output.get_last_message()
-	assert_eq(last_msg.get("logger_name"), "TestLogger", "Should log with correct logger name")
-	assert_eq(last_msg.get("level"), LogLevel.Level.TRACE, "Should log with TRACE level")
-	assert_eq(last_msg.get("message"), "Trace message", "Should log correct message")
+	assert_str(last_msg.get("logger_name")).is_equal("TestLogger")
+	assert_int(last_msg.get("level")).is_equal(LogLevel.Level.TRACE)
+	assert_str(last_msg.get("message")).is_equal("Trace message")
 
 func test_debug_logging():
 	logger_instance.set_level(LogLevel.Level.DEBUG)
 	logger_instance.debug("Debug message")
 	
 	var last_msg = mock_output.get_last_message()
-	assert_eq(last_msg.get("level"), LogLevel.Level.DEBUG, "Should log with DEBUG level")
-	assert_eq(last_msg.get("message"), "Debug message", "Should log correct message")
+	assert_int(last_msg.get("level")).is_equal(LogLevel.Level.DEBUG)
+	assert_str(last_msg.get("message")).is_equal("Debug message")
 
 func test_info_logging():
 	logger_instance.set_level(LogLevel.Level.INFO)
 	logger_instance.info("Info message")
 	
 	var last_msg = mock_output.get_last_message()
-	assert_eq(last_msg.get("level"), LogLevel.Level.INFO, "Should log with INFO level")
-	assert_eq(last_msg.get("message"), "Info message", "Should log correct message")
+	assert_int(last_msg.get("level")).is_equal(LogLevel.Level.INFO)
+	assert_str(last_msg.get("message")).is_equal("Info message")
 
 func test_warn_logging():
 	logger_instance.set_level(LogLevel.Level.WARN)
 	logger_instance.warn("Warn message")
 	
 	var last_msg = mock_output.get_last_message()
-	assert_eq(last_msg.get("level"), LogLevel.Level.WARN, "Should log with WARN level")
-	assert_eq(last_msg.get("message"), "Warn message", "Should log correct message")
+	assert_int(last_msg.get("level")).is_equal(LogLevel.Level.WARN)
+	assert_str(last_msg.get("message")).is_equal("Warn message")
 
 func test_error_logging():
 	logger_instance.set_level(LogLevel.Level.ERROR)
 	logger_instance.error("Error message")
 	
 	var last_msg = mock_output.get_last_message()
-	assert_eq(last_msg.get("level"), LogLevel.Level.ERROR, "Should log with ERROR level")
-	assert_eq(last_msg.get("message"), "Error message", "Should log correct message")
+	assert_int(last_msg.get("level")).is_equal(LogLevel.Level.ERROR)
+	assert_str(last_msg.get("message")).is_equal("Error message")
 
 func test_fatal_logging():
 	logger_instance.set_level(LogLevel.Level.FATAL)
 	logger_instance.fatal("Fatal message")
 	
 	var last_msg = mock_output.get_last_message()
-	assert_eq(last_msg.get("level"), LogLevel.Level.FATAL, "Should log with FATAL level")
-	assert_eq(last_msg.get("message"), "Fatal message", "Should log correct message")
+	assert_int(last_msg.get("level")).is_equal(LogLevel.Level.FATAL)
+	assert_str(last_msg.get("message")).is_equal("Fatal message")
 
 func test_generic_log_function():
 	logger_instance.set_level(LogLevel.Level.DEBUG)
 	logger_instance.log(LogLevel.Level.WARN, "Generic log message")
 	
 	var last_msg = mock_output.get_last_message()
-	assert_eq(last_msg.get("level"), LogLevel.Level.WARN, "Should log with specified level")
-	assert_eq(last_msg.get("message"), "Generic log message", "Should log correct message")
+	assert_int(last_msg.get("level")).is_equal(LogLevel.Level.WARN)
+	assert_str(last_msg.get("message")).is_equal("Generic log message")
 
 # Test level filtering
 func test_trace_filtered_out():
@@ -179,7 +179,7 @@ func test_trace_filtered_out():
 	
 	logger_instance.trace("This should not be logged")
 	
-	assert_eq(mock_output.logged_messages.size(), 0, "TRACE message should be filtered out")
+	assert_int(mock_output.logged_messages.size()).is_equal(0)
 
 func test_debug_filtered_out():
 	logger_instance.set_level(LogLevel.Level.INFO)
@@ -187,7 +187,7 @@ func test_debug_filtered_out():
 	
 	logger_instance.debug("This should not be logged")
 	
-	assert_eq(mock_output.logged_messages.size(), 0, "DEBUG message should be filtered out")
+	assert_int(mock_output.logged_messages.size()).is_equal(0)
 
 func test_info_filtered_out():
 	logger_instance.set_level(LogLevel.Level.WARN)
@@ -195,7 +195,7 @@ func test_info_filtered_out():
 	
 	logger_instance.info("This should not be logged")
 	
-	assert_eq(mock_output.logged_messages.size(), 0, "INFO message should be filtered out")
+	assert_int(mock_output.logged_messages.size()).is_equal(0)
 
 func test_higher_levels_pass_through():
 	logger_instance.set_level(LogLevel.Level.WARN)
@@ -205,7 +205,7 @@ func test_higher_levels_pass_through():
 	logger_instance.error("Error message")
 	logger_instance.fatal("Fatal message")
 	
-	assert_eq(mock_output.logged_messages.size(), 3, "All higher level messages should pass through")
+	assert_int(mock_output.logged_messages.size()).is_equal(3)
 
 # Test global level filtering
 func test_global_level_filtering():
@@ -218,8 +218,8 @@ func test_global_level_filtering():
 	filtered_logger.info("This should also be filtered")
 	filtered_logger.error("This should pass through")
 	
-	assert_eq(mock_output.logged_messages.size(), 1, "Only ERROR should pass through global filter")
-	assert_eq(mock_output.get_last_message().level, LogLevel.Level.ERROR, "Should be ERROR level")
+	assert_int(mock_output.logged_messages.size()).is_equal(1)
+	assert_int(mock_output.get_last_message().level).is_equal(LogLevel.Level.ERROR)
 
 # Test empty and special messages
 func test_empty_message():
@@ -227,8 +227,8 @@ func test_empty_message():
 	logger_instance.info("")
 	
 	var last_msg = mock_output.get_last_message()
-	assert_eq(last_msg.get("message"), "", "Should handle empty message")
-	assert_eq(last_msg.get("level"), LogLevel.Level.INFO, "Should still log with correct level")
+	assert_str(last_msg.get("message")).is_equal("")
+	assert_int(last_msg.get("level")).is_equal(LogLevel.Level.INFO)
 
 func test_special_characters_message():
 	logger_instance.set_level(LogLevel.Level.INFO)
@@ -236,7 +236,7 @@ func test_special_characters_message():
 	logger_instance.info(special_msg)
 	
 	var last_msg = mock_output.get_last_message()
-	assert_eq(last_msg.get("message"), special_msg, "Should handle special characters")
+	assert_str(last_msg.get("message")).is_equal(special_msg)
 
 func test_unicode_message():
 	logger_instance.set_level(LogLevel.Level.INFO)
@@ -244,7 +244,7 @@ func test_unicode_message():
 	logger_instance.info(unicode_msg)
 	
 	var last_msg = mock_output.get_last_message()
-	assert_eq(last_msg.get("message"), unicode_msg, "Should handle unicode characters")
+	assert_str(last_msg.get("message")).is_equal(unicode_msg)
 
 # Test multiple sequential messages
 func test_multiple_messages():
@@ -255,10 +255,10 @@ func test_multiple_messages():
 	logger_instance.info("Second message")
 	logger_instance.warn("Third message")
 	
-	assert_eq(mock_output.logged_messages.size(), 3, "Should log all messages")
-	assert_eq(mock_output.logged_messages[0].message, "First message", "First message should be correct")
-	assert_eq(mock_output.logged_messages[1].message, "Second message", "Second message should be correct")
-	assert_eq(mock_output.logged_messages[2].message, "Third message", "Third message should be correct")
+	assert_int(mock_output.logged_messages.size()).is_equal(3)
+	assert_str(mock_output.logged_messages[0].message).is_equal("First message")
+	assert_str(mock_output.logged_messages[1].message).is_equal("Second message")
+	assert_str(mock_output.logged_messages[2].message).is_equal("Third message")
 
 # Test level consistency
 func test_level_consistency():
@@ -271,5 +271,5 @@ func test_level_consistency():
 	if logger_instance.is_warn_enabled():
 		logger_instance.warn("This should happen")
 	
-	assert_eq(mock_output.logged_messages.size(), 1, "Only one message should be logged")
-	assert_eq(mock_output.get_last_message().level, LogLevel.Level.WARN, "Should be WARN message")
+	assert_int(mock_output.logged_messages.size()).is_equal(1)
+	assert_int(mock_output.get_last_message().level).is_equal(LogLevel.Level.WARN)

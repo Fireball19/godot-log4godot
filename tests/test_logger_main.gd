@@ -1,11 +1,11 @@
 # test_logger_main.gd
-# Unit tests for the main Logger autoload class
-extends GutTest
+# Unit tests for the main Logger autoload class using gdUnit4
+extends GdUnitTestSuite
 
 var logger_node: Node
 var test_file_path: String = "user://test_main_logger.log"
 
-func before_each():
+func before_test():
 	# Create a Logger instance for testing (simulating the autoload)
 	logger_node = preload("res://addons/log4godot/logger.gd").new()
 	logger_node._ready()
@@ -14,7 +14,7 @@ func before_each():
 	if FileAccess.file_exists(test_file_path):
 		DirAccess.remove_absolute(test_file_path)
 
-func after_each():
+func after_test():
 	# Clean up test file
 	if FileAccess.file_exists(test_file_path):
 		DirAccess.remove_absolute(test_file_path)
@@ -25,8 +25,8 @@ func after_each():
 
 # Test initialization
 func test_logger_initialization():
-	assert_not_null(logger_node.manager, "Should have manager instance")
-	assert_not_null(logger_node.manager.main_logger, "Should have main logger")
+	assert_object(logger_node.manager).is_not_null()
+	assert_object(logger_node.manager.main_logger).is_not_null()
 
 # Test global logger shortcut methods
 func test_trace_shortcut():
@@ -38,8 +38,8 @@ func test_trace_shortcut():
 	var content = file.get_as_text()
 	file.close()
 	
-	assert_true(content.contains("TRACE"), "Should contain TRACE level")
-	assert_true(content.contains("Trace message"), "Should contain trace message")
+	assert_str(content).contains("TRACE")
+	assert_str(content).contains("Trace message")
 
 func test_debug_shortcut():
 	logger_node.set_global_level(LogLevel.Level.DEBUG)
@@ -50,8 +50,8 @@ func test_debug_shortcut():
 	var content = file.get_as_text()
 	file.close()
 	
-	assert_true(content.contains("DEBUG"), "Should contain DEBUG level")
-	assert_true(content.contains("Debug message"), "Should contain debug message")
+	assert_str(content).contains("DEBUG")
+	assert_str(content).contains("Debug message")
 
 func test_info_shortcut():
 	logger_node.set_global_level(LogLevel.Level.INFO)
@@ -62,8 +62,8 @@ func test_info_shortcut():
 	var content = file.get_as_text()
 	file.close()
 	
-	assert_true(content.contains("INFO"), "Should contain INFO level")
-	assert_true(content.contains("Info message"), "Should contain info message")
+	assert_str(content).contains("INFO")
+	assert_str(content).contains("Info message")
 
 func test_warn_shortcut():
 	logger_node.set_global_level(LogLevel.Level.WARN)
@@ -74,8 +74,8 @@ func test_warn_shortcut():
 	var content = file.get_as_text()
 	file.close()
 	
-	assert_true(content.contains("WARN"), "Should contain WARN level")
-	assert_true(content.contains("Warn message"), "Should contain warn message")
+	assert_str(content).contains("WARN")
+	assert_str(content).contains("Warn message")
 
 func test_error_shortcut():
 	logger_node.set_global_level(LogLevel.Level.ERROR)
@@ -86,8 +86,8 @@ func test_error_shortcut():
 	var content = file.get_as_text()
 	file.close()
 	
-	assert_true(content.contains("ERROR"), "Should contain ERROR level")
-	assert_true(content.contains("Error message"), "Should contain error message")
+	assert_str(content).contains("ERROR")
+	assert_str(content).contains("Error message")
 
 func test_fatal_shortcut():
 	logger_node.set_global_level(LogLevel.Level.FATAL)
@@ -98,8 +98,8 @@ func test_fatal_shortcut():
 	var content = file.get_as_text()
 	file.close()
 	
-	assert_true(content.contains("FATAL"), "Should contain FATAL level")
-	assert_true(content.contains("Fatal message"), "Should contain fatal message")
+	assert_str(content).contains("FATAL")
+	assert_str(content).contains("Fatal message")
 
 func test_log_shortcut():
 	logger_node.set_global_level(LogLevel.Level.INFO)
@@ -110,71 +110,71 @@ func test_log_shortcut():
 	var content = file.get_as_text()
 	file.close()
 	
-	assert_true(content.contains("INFO"), "Should contain INFO level")
-	assert_true(content.contains("Generic log message"), "Should contain generic message")
+	assert_str(content).contains("INFO")
+	assert_str(content).contains("Generic log message")
 
 # Test level checking shortcuts
 func test_is_trace_enabled():
 	logger_node.set_global_level(LogLevel.Level.TRACE)
-	assert_true(logger_node.is_trace_enabled(), "Should enable TRACE")
+	assert_bool(logger_node.is_trace_enabled()).is_true()
 	
 	logger_node.set_global_level(LogLevel.Level.DEBUG)
-	assert_false(logger_node.is_trace_enabled(), "Should disable TRACE")
+	assert_bool(logger_node.is_trace_enabled()).is_false()
 
 func test_is_debug_enabled():
 	logger_node.set_global_level(LogLevel.Level.DEBUG)
-	assert_true(logger_node.is_debug_enabled(), "Should enable DEBUG")
+	assert_bool(logger_node.is_debug_enabled()).is_true()
 	
 	logger_node.set_global_level(LogLevel.Level.INFO)
-	assert_false(logger_node.is_debug_enabled(), "Should disable DEBUG")
+	assert_bool(logger_node.is_debug_enabled()).is_false()
 
 func test_is_info_enabled():
 	logger_node.set_global_level(LogLevel.Level.INFO)
-	assert_true(logger_node.is_info_enabled(), "Should enable INFO")
+	assert_bool(logger_node.is_info_enabled()).is_true()
 	
 	logger_node.set_global_level(LogLevel.Level.WARN)
-	assert_false(logger_node.is_info_enabled(), "Should disable INFO")
+	assert_bool(logger_node.is_info_enabled()).is_false()
 
 func test_is_warn_enabled():
 	logger_node.set_global_level(LogLevel.Level.WARN)
-	assert_true(logger_node.is_warn_enabled(), "Should enable WARN")
+	assert_bool(logger_node.is_warn_enabled()).is_true()
 	
 	logger_node.set_global_level(LogLevel.Level.ERROR)
-	assert_false(logger_node.is_warn_enabled(), "Should disable WARN")
+	assert_bool(logger_node.is_warn_enabled()).is_false()
 
 func test_is_error_enabled():
 	logger_node.set_global_level(LogLevel.Level.ERROR)
-	assert_true(logger_node.is_error_enabled(), "Should enable ERROR")
+	assert_bool(logger_node.is_error_enabled()).is_true()
 	
 	logger_node.set_global_level(LogLevel.Level.FATAL)
-	assert_false(logger_node.is_error_enabled(), "Should disable ERROR")
+	assert_bool(logger_node.is_error_enabled()).is_false()
 
 func test_is_fatal_enabled():
 	logger_node.set_global_level(LogLevel.Level.FATAL)
-	assert_true(logger_node.is_fatal_enabled(), "Should enable FATAL")
+	assert_bool(logger_node.is_fatal_enabled()).is_true()
 
 func test_is_level_enabled():
 	logger_node.set_global_level(LogLevel.Level.WARN)
 	
-	assert_false(logger_node.is_level_enabled(LogLevel.Level.DEBUG), "DEBUG should be disabled")
-	assert_true(logger_node.is_level_enabled(LogLevel.Level.WARN), "WARN should be enabled")
-	assert_true(logger_node.is_level_enabled(LogLevel.Level.ERROR), "ERROR should be enabled")
+	assert_bool(logger_node.is_level_enabled(LogLevel.Level.DEBUG)).is_false()
+	assert_bool(logger_node.is_level_enabled(LogLevel.Level.WARN)).is_true()
+	assert_bool(logger_node.is_level_enabled(LogLevel.Level.ERROR)).is_true()
 
 # Test configuration methods
 func test_set_get_global_level():
 	logger_node.set_global_level(LogLevel.Level.ERROR)
-	assert_eq(logger_node.get_global_level(), LogLevel.Level.ERROR, "Should update global level")
+	assert_int(logger_node.get_global_level()).is_equal(LogLevel.Level.ERROR)
 
 func test_set_colors_enabled():
 	logger_node.set_colors_enabled(false)
-	assert_false(logger_node.manager.output.enable_colors, "Should disable colors")
+	assert_bool(logger_node.manager.output.enable_colors).is_false()
 	
 	logger_node.set_colors_enabled(true)
-	assert_true(logger_node.manager.output.enable_colors, "Should enable colors")
+	assert_bool(logger_node.manager.output.enable_colors).is_true()
 
 func test_set_file_logging_enabled():
 	logger_node.set_file_logging_enabled(true, test_file_path)
-	assert_true(FileAccess.file_exists(test_file_path), "Should create log file")
+	assert_bool(FileAccess.file_exists(test_file_path)).is_true()
 
 func test_clear_log_file():
 	logger_node.set_file_logging_enabled(true, test_file_path)
@@ -185,47 +185,47 @@ func test_clear_log_file():
 	var content = file.get_as_text()
 	file.close()
 	
-	assert_true(content.contains("Log Cleared"), "Should clear log file")
+	assert_str(content).contains("Log Cleared")
 
 # Test named logger management
 func test_get_logger():
 	var named_logger = logger_node.get_logger("TestLogger")
 	
-	assert_not_null(named_logger, "Should return logger instance")
-	assert_eq(named_logger.name, "TestLogger", "Should have correct name")
+	assert_object(named_logger).is_not_null()
+	assert_str(named_logger.name).is_equal("TestLogger")
 
 func test_get_logger_with_level():
 	var named_logger = logger_node.get_logger("TestLogger", LogLevel.Level.ERROR)
-	assert_eq(named_logger.log_level, LogLevel.Level.ERROR, "Should use specified level")
+	assert_int(named_logger.log_level).is_equal(LogLevel.Level.ERROR)
 
 func test_get_logger_default_level():
 	var named_logger = logger_node.get_logger("TestLogger")
-	assert_eq(named_logger.log_level, LogLevel.Level.INFO, "Should use default INFO level")
+	assert_int(named_logger.log_level).is_equal(LogLevel.Level.INFO)
 
 func test_remove_logger():
 	logger_node.get_logger("ToRemove")
 	var removed = logger_node.remove_logger("ToRemove")
-	assert_true(removed, "Should remove existing logger")
+	assert_bool(removed).is_true()
 	
 	var not_removed = logger_node.remove_logger("NonExistent")
-	assert_false(not_removed, "Should return false for non-existent logger")
+	assert_bool(not_removed).is_false()
 
 func test_list_loggers():
 	logger_node.get_logger("Logger1")
 	logger_node.get_logger("Logger2")
 	
 	var loggers = logger_node.list_loggers()
-	assert_eq(loggers.size(), 2, "Should list all named loggers")
-	assert_true(loggers.has("Logger1"), "Should contain Logger1")
-	assert_true(loggers.has("Logger2"), "Should contain Logger2")
+	assert_int(loggers.size()).is_equal(2)
+	assert_array(loggers).contains(["Logger1"])
+	assert_array(loggers).contains(["Logger2"])
 
 # Test utility methods
 func test_log_level_from_string():
-	assert_eq(logger_node.log_level_from_string("DEBUG"), LogLevel.Level.DEBUG, "Should parse DEBUG")
-	assert_eq(logger_node.log_level_from_string("invalid"), LogLevel.Level.INFO, "Should default to INFO")
+	assert_int(logger_node.log_level_from_string("DEBUG")).is_equal(LogLevel.Level.DEBUG)
+	assert_int(logger_node.log_level_from_string("invalid")).is_equal(LogLevel.Level.INFO)
 
 func test_log_level_to_string():
-	assert_eq(logger_node.log_level_to_string(LogLevel.Level.ERROR), "ERROR", "Should convert ERROR to string")
+	assert_str(logger_node.log_level_to_string(LogLevel.Level.ERROR)).is_equal("ERROR")
 
 # Test integration scenarios
 func test_main_logger_vs_named_logger():
@@ -242,9 +242,9 @@ func test_main_logger_vs_named_logger():
 	var content = file.get_as_text()
 	file.close()
 	
-	assert_true(content.contains("Main logger message"), "Should contain main logger message")
-	assert_true(content.contains("Named logger message"), "Should contain named logger message")
-	assert_true(content.contains("[Named]"), "Should show named logger name")
+	assert_str(content).contains("Main logger message")
+	assert_str(content).contains("Named logger message")
+	assert_str(content).contains("[Named]")
 
 func test_level_filtering_consistency():
 	logger_node.set_global_level(LogLevel.Level.WARN)
@@ -262,10 +262,10 @@ func test_level_filtering_consistency():
 	var content = file.get_as_text()
 	file.close()
 	
-	assert_false(content.contains("Debug message"), "DEBUG should be filtered")
-	assert_false(content.contains("Info message"), "INFO should be filtered")
-	assert_true(content.contains("Warn message"), "WARN should pass through")
-	assert_true(content.contains("Error message"), "ERROR should pass through")
+	assert_str(content).not_contains("Debug message")
+	assert_str(content).not_contains("Info message")
+	assert_str(content).contains("Warn message")
+	assert_str(content).contains("Error message")
 
 func test_configuration_persistence():
 	# Test that configuration changes persist across operations
@@ -279,14 +279,14 @@ func test_configuration_persistence():
 	named.error("Test error message")
 	
 	# Verify configuration is still applied
-	assert_eq(logger_node.get_global_level(), LogLevel.Level.ERROR, "Global level should persist")
-	assert_false(logger_node.manager.output.enable_colors, "Color setting should persist")
+	assert_int(logger_node.get_global_level()).is_equal(LogLevel.Level.ERROR)
+	assert_bool(logger_node.manager.output.enable_colors).is_false()
 	
 	var file = FileAccess.open(test_file_path, FileAccess.READ)
 	var content = file.get_as_text()
 	file.close()
 	
-	assert_true(content.contains("Test error message"), "Should log with persistent configuration")
+	assert_str(content).contains("Test error message")
 
 # Test backwards compatibility
 func test_backwards_compatibility():
@@ -301,4 +301,4 @@ func test_backwards_compatibility():
 	var content = file.get_as_text()
 	file.close()
 	
-	assert_true(content.contains("Backwards compatible message"), "Should support old-style usage")
+	assert_str(content).contains("Backwards compatible message")

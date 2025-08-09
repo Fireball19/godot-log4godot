@@ -1,17 +1,17 @@
 # test_log_output.gd
-# Unit tests for LogOutput class
-extends GutTest
+# Unit tests for LogOutput class using gdUnit4
+extends GdUnitTestSuite
 
 var output: LogOutput
 var test_file_path: String = "user://test_output.log"
 
-func before_each():
+func before_test():
 	output = LogOutput.new()
 	# Clean up any existing test file
 	if FileAccess.file_exists(test_file_path):
 		DirAccess.remove_absolute(test_file_path)
 
-func after_each():
+func after_test():
 	# Clean up test file
 	if FileAccess.file_exists(test_file_path):
 		DirAccess.remove_absolute(test_file_path)
@@ -19,29 +19,29 @@ func after_each():
 
 # Test initialization
 func test_initialization():
-	assert_not_null(output.formatter, "Should have formatter instance")
-	assert_not_null(output.file_handler, "Should have file handler instance")
-	assert_true(output.enable_colors, "Colors should be enabled by default")
+	assert_object(output.formatter).is_not_null()
+	assert_object(output.file_handler).is_not_null()
+	assert_bool(output.enable_colors).is_true()
 
 # Test color configuration
 func test_set_colors_enabled():
 	output.set_colors_enabled(false)
-	assert_false(output.enable_colors, "Should disable colors")
+	assert_bool(output.enable_colors).is_false()
 	
 	output.set_colors_enabled(true)
-	assert_true(output.enable_colors, "Should enable colors")
+	assert_bool(output.enable_colors).is_true()
 
 # Test file logging configuration
 func test_set_file_logging_enabled():
 	output.set_file_logging_enabled(true, test_file_path)
 	
 	# File should be created when enabled
-	assert_true(FileAccess.file_exists(test_file_path), "Should create file when enabled")
+	assert_bool(FileAccess.file_exists(test_file_path)).is_true()
 
 func test_set_file_logging_disabled():
 	output.set_file_logging_enabled(false, test_file_path)
 	# Should not create file when disabled
-	assert_false(FileAccess.file_exists(test_file_path), "Should not create file when disabled")
+	assert_bool(FileAccess.file_exists(test_file_path)).is_false()
 
 # Test log output functionality
 func test_output_log_basic():
@@ -49,15 +49,15 @@ func test_output_log_basic():
 	output.output_log("TestLogger", LogLevel.Level.INFO, "Test message")
 	
 	# Should create file with content
-	assert_true(FileAccess.file_exists(test_file_path), "Should create log file")
+	assert_bool(FileAccess.file_exists(test_file_path)).is_true()
 	
 	var file = FileAccess.open(test_file_path, FileAccess.READ)
 	var content = file.get_as_text()
 	file.close()
 	
-	assert_true(content.contains("Test message"), "Should contain the message")
-	assert_true(content.contains("INFO"), "Should contain log level")
-	assert_true(content.contains("TestLogger"), "Should contain logger name")
+	assert_str(content).contains("Test message")
+	assert_str(content).contains("INFO")
+	assert_str(content).contains("TestLogger")
 
 func test_output_log_main_logger():
 	output.set_file_logging_enabled(true, test_file_path)
@@ -67,8 +67,8 @@ func test_output_log_main_logger():
 	var content = file.get_as_text()
 	file.close()
 	
-	assert_true(content.contains("Error message"), "Should contain the message")
-	assert_true(content.contains("ERROR"), "Should contain log level")
+	assert_str(content).contains("Error message")
+	assert_str(content).contains("ERROR")
 	# Main logger name should not appear in formatted message for Main logger
 
 func test_output_log_different_levels():
@@ -85,12 +85,12 @@ func test_output_log_different_levels():
 	var content = file.get_as_text()
 	file.close()
 	
-	assert_true(content.contains("TRACE"), "Should contain TRACE level")
-	assert_true(content.contains("DEBUG"), "Should contain DEBUG level")
-	assert_true(content.contains("INFO"), "Should contain INFO level")
-	assert_true(content.contains("WARN"), "Should contain WARN level")
-	assert_true(content.contains("ERROR"), "Should contain ERROR level")
-	assert_true(content.contains("FATAL"), "Should contain FATAL level")
+	assert_str(content).contains("TRACE")
+	assert_str(content).contains("DEBUG")
+	assert_str(content).contains("INFO")
+	assert_str(content).contains("WARN")
+	assert_str(content).contains("ERROR")
+	assert_str(content).contains("FATAL")
 
 # Test clear log file
 func test_clear_log_file():
@@ -103,8 +103,8 @@ func test_clear_log_file():
 	var content = file.get_as_text()
 	file.close()
 	
-	assert_true(content.contains("Log Cleared"), "Should contain clear message")
-	assert_false(content.contains("Message before clear"), "Should not contain old messages")
+	assert_str(content).contains("Log Cleared")
+	assert_str(content).not_contains("Message before clear")
 
 # Test console output formatting (indirectly through file output)
 func test_output_formatting_with_timestamps():
@@ -120,7 +120,7 @@ func test_output_formatting_with_timestamps():
 	# Should contain timestamp pattern
 	var timestamp_regex = RegEx.new()
 	timestamp_regex.compile(r"\[\d{2}:\d{2}:\d{2}\.\d{3}\]")
-	assert_true(timestamp_regex.search(content) != null, "Should contain timestamp")
+	assert_object(timestamp_regex.search(content)).is_not_null()
 
 func test_output_formatting_without_timestamps():
 	output.set_timestamps_enabled(false)
@@ -135,9 +135,9 @@ func test_output_formatting_without_timestamps():
 	# Should not contain timestamp pattern
 	var timestamp_regex = RegEx.new()
 	timestamp_regex.compile(r"\[\d{2}:\d{2}:\d{2}\.\d{3}\]")
-	assert_true(timestamp_regex.search(content) == null, "Should not contain timestamp")
-	assert_true(content.contains("[INFO]"), "Should contain log level")
-	assert_true(content.contains("TestLogger"), "Should contain logger name")
+	assert_object(timestamp_regex.search(content)).is_null()
+	assert_str(content).contains("[INFO]")
+	assert_str(content).contains("TestLogger")
 
 # Test edge cases
 func test_output_empty_message():
@@ -148,7 +148,7 @@ func test_output_empty_message():
 	var content = file.get_as_text()
 	file.close()
 	
-	assert_true(content.contains("[INFO]"), "Should still contain log level for empty message")
+	assert_str(content).contains("[INFO]")
 
 func test_output_special_characters():
 	output.set_file_logging_enabled(true, test_file_path)
@@ -159,7 +159,7 @@ func test_output_special_characters():
 	var content = file.get_as_text()
 	file.close()
 	
-	assert_true(content.contains("Special chars"), "Should handle special characters")
+	assert_str(content).contains("Special chars")
 
 func test_output_unicode():
 	output.set_file_logging_enabled(true, test_file_path)
@@ -170,7 +170,7 @@ func test_output_unicode():
 	var content = file.get_as_text()
 	file.close()
 	
-	assert_true(content.contains("Unicode"), "Should handle unicode characters")
+	assert_str(content).contains("Unicode")
 
 # Test multiple loggers
 func test_multiple_loggers():
@@ -184,12 +184,12 @@ func test_multiple_loggers():
 	var content = file.get_as_text()
 	file.close()
 	
-	assert_true(content.contains("NetworkLogger"), "Should contain NetworkLogger")
-	assert_true(content.contains("AILogger"), "Should contain AILogger")
-	assert_true(content.contains("PhysicsLogger"), "Should contain PhysicsLogger")
-	assert_true(content.contains("Network message"), "Should contain network message")
-	assert_true(content.contains("AI message"), "Should contain AI message")
-	assert_true(content.contains("Physics message"), "Should contain physics message")
+	assert_str(content).contains("NetworkLogger")
+	assert_str(content).contains("AILogger")
+	assert_str(content).contains("PhysicsLogger")
+	assert_str(content).contains("Network message")
+	assert_str(content).contains("AI message")
+	assert_str(content).contains("Physics message")
 
 # Test configuration changes don't affect existing logs
 func test_configuration_changes():
@@ -205,8 +205,8 @@ func test_configuration_changes():
 	var content = file.get_as_text()
 	file.close()
 	
-	assert_true(content.contains("Message with timestamp"), "Should contain first message")
-	assert_true(content.contains("Message without timestamp"), "Should contain second message")
+	assert_str(content).contains("Message with timestamp")
+	assert_str(content).contains("Message without timestamp")
 
 # Test that output works without file logging
 func test_console_only_output():
@@ -215,7 +215,7 @@ func test_console_only_output():
 	output.output_log("Test", LogLevel.Level.INFO, "Console only message")
 	
 	# File should not be created
-	assert_false(FileAccess.file_exists(test_file_path), "Should not create file when file logging disabled")
+	assert_bool(FileAccess.file_exists(test_file_path)).is_false()
 
 # Test internal component interaction
 func test_formatter_integration():
@@ -230,9 +230,9 @@ func test_formatter_integration():
 	file.close()
 	
 	# Should contain formatted output with all components
-	assert_true(content.contains("[ERROR]"), "Should contain formatted log level")
-	assert_true(content.contains("[TestLogger]"), "Should contain formatted logger name")
-	assert_true(content.contains("Test error"), "Should contain message")
+	assert_str(content).contains("[ERROR]")
+	assert_str(content).contains("[TestLogger]")
+	assert_str(content).contains("Test error")
 
 func test_file_handler_integration():
 	# Test that file handler is properly integrated
@@ -252,4 +252,4 @@ func test_file_handler_integration():
 			non_empty_lines.append(line)
 	
 	# Should have session start line plus our two messages
-	assert_true(non_empty_lines.size() >= 3, "Should have session start and both messages")
+	assert_int(non_empty_lines.size()).is_greater_equal(3)

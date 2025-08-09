@@ -1,10 +1,10 @@
 # test_integration.gd
-# Integration tests for the complete log4godot system
-extends GutTest
+# Integration tests for the complete log4godot system using gdUnit4
+extends GdUnitTestSuite
 
 var test_file_path: String = "user://test_integration.log"
 
-func before_each():
+func before_test():
 	# Clean up any existing test file
 	if FileAccess.file_exists(test_file_path):
 		DirAccess.remove_absolute(test_file_path)
@@ -20,7 +20,7 @@ func before_each():
 	for logger_name in existing_loggers:
 		Logger.remove_logger(logger_name)
 
-func after_each():
+func after_test():
 	# Clean up test file
 	if FileAccess.file_exists(test_file_path):
 		DirAccess.remove_absolute(test_file_path)
@@ -57,14 +57,14 @@ func test_complete_logging_workflow():
 	file.close()
 	
 	# Check main logger messages
-	assert_true(content.contains("System initialized"), "Should contain main logger info")
-	assert_true(content.contains("Debug information"), "Should contain main logger debug")
+	assert_str(content).contains("System initialized")
+	assert_str(content).contains("Debug information")
 	
 	# Check named logger messages
-	assert_true(content.contains("[Network] Connection established"), "Should contain network info")
-	assert_false(content.contains("This should not appear"), "Network debug should be filtered")
-	assert_true(content.contains("[AI] AI processing started"), "Should contain AI debug")
-	assert_true(content.contains("[AI] AI warning message"), "Should contain AI warning")
+	assert_str(content).contains("[Network] Connection established")
+	assert_str(content).not_contains("This should not appear")
+	assert_str(content).contains("[AI] AI processing started")
+	assert_str(content).contains("[AI] AI warning message")
 
 # Test level hierarchy and filtering
 func test_level_hierarchy():
@@ -103,12 +103,15 @@ func test_level_hierarchy():
 		# Only messages at or above global level should appear
 		for level in LogLevel.Level.values():
 			var message = LogLevel.level_to_string(level) + " message"
+			var global_level_name = LogLevel.level_to_string(global_level)
+			var level_name = LogLevel.level_to_string(level)
+			
 			if level >= global_level:
-				assert_true(content.contains(message), 
-					"Level " + LogLevel.level_to_string(level) + " should appear when global is " + LogLevel.level_to_string(global_level))
+				assert_str(content).contains(message).override_failure_message(
+					"Level %s should appear when global is %s" % [level_name, global_level_name])
 			else:
-				assert_false(content.contains(message), 
-					"Level " + LogLevel.level_to_string(level) + " should be filtered when global is " + LogLevel.level_to_string(global_level))
+				assert_str(content).not_contains(message).override_failure_message(
+					"Level %s should be filtered when global is %s" % [level_name, global_level_name])
 
 # Test multiple logger interaction
 func test_multiple_logger_interaction():
@@ -147,22 +150,22 @@ func test_multiple_logger_interaction():
 	file.close()
 	
 	# Verify filtering based on logger levels
-	assert_false(content.contains("System debug (filtered)"), "System debug should be filtered")
-	assert_true(content.contains("[System] System info"), "System info should appear")
-	assert_true(content.contains("[System] System error"), "System error should appear")
+	assert_str(content).not_contains("System debug (filtered)")
+	assert_str(content).contains("[System] System info")
+	assert_str(content).contains("[System] System error")
 	
-	assert_true(content.contains("[Network] Network debug"), "Network debug should appear")
-	assert_true(content.contains("[Network] Network info"), "Network info should appear")
-	assert_true(content.contains("[Network] Network warn"), "Network warn should appear")
+	assert_str(content).contains("[Network] Network debug")
+	assert_str(content).contains("[Network] Network info")
+	assert_str(content).contains("[Network] Network warn")
 	
-	assert_false(content.contains("Database debug (filtered)"), "Database debug should be filtered")
-	assert_false(content.contains("Database info (filtered)"), "Database info should be filtered") 
-	assert_true(content.contains("[Database] Database warn"), "Database warn should appear")
-	assert_true(content.contains("[Database] Database error"), "Database error should appear")
+	assert_str(content).not_contains("Database debug (filtered)")
+	assert_str(content).not_contains("Database info (filtered)")
+	assert_str(content).contains("[Database] Database warn")
+	assert_str(content).contains("[Database] Database error")
 	
-	assert_false(content.contains("UI warn (filtered)"), "UI warn should be filtered")
-	assert_true(content.contains("[UI] UI error"), "UI error should appear")
-	assert_true(content.contains("[UI] UI fatal"), "UI fatal should appear")
+	assert_str(content).not_contains("UI warn (filtered)")
+	assert_str(content).contains("[UI] UI error")
+	assert_str(content).contains("[UI] UI fatal")
 
 # Test configuration changes during runtime
 func test_runtime_configuration_changes():
@@ -191,13 +194,13 @@ func test_runtime_configuration_changes():
 	var content = file.get_as_text()
 	file.close()
 	
-	assert_false(content.contains("Debug message 1"), "First debug should be filtered by global level")
-	assert_true(content.contains("Info message 1"), "First info should appear")
-	assert_true(content.contains("Debug message 2"), "Second debug should appear after global level change")
-	assert_true(content.contains("Info message 2"), "Second info should appear")
-	assert_false(content.contains("Debug message 3"), "Third debug should be filtered by logger level")
-	assert_false(content.contains("Info message 3"), "Third info should be filtered by logger level")
-	assert_true(content.contains("Warn message 1"), "Warn should appear")
+	assert_str(content).not_contains("Debug message 1")
+	assert_str(content).contains("Info message 1")
+	assert_str(content).contains("Debug message 2")
+	assert_str(content).contains("Info message 2")
+	assert_str(content).not_contains("Debug message 3")
+	assert_str(content).not_contains("Info message 3")
+	assert_str(content).contains("Warn message 1")
 
 # Test file operations
 func test_file_operations():
@@ -212,8 +215,8 @@ func test_file_operations():
 	var content1 = file1.get_as_text()
 	file1.close()
 	
-	assert_true(content1.contains("Initial message"), "Should contain initial message")
-	assert_true(content1.contains("Warning message"), "Should contain warning message")
+	assert_str(content1).contains("Initial message")
+	assert_str(content1).contains("Warning message")
 	
 	# Clear the log
 	Logger.clear_log_file()
@@ -223,7 +226,7 @@ func test_file_operations():
 	var content2 = file2.get_as_text()
 	file2.close()
 	
-	assert_true(content2.contains("Log Cleared"), "Should contain clear marker")
-	assert_true(content2.contains("Message after clear"), "Should contain message after clear")
-	assert_false(content2.contains("Initial message"), "Should not contain old messages")
-	assert_false(content2.contains("Warning message"), "Should not contain old messages")
+	assert_str(content2).contains("Log Cleared")
+	assert_str(content2).contains("Message after clear")
+	assert_str(content2).not_contains("Initial message")
+	assert_str(content2).not_contains("Warning message")
