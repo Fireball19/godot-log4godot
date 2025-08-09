@@ -11,4 +11,4 @@ jobs:
           godot-version: '4.4.1'
           paths: 'res://tests'
           timeout: 10
-          version: '5.0.5'
+          version: 'v5.0.5'
