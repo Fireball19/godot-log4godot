@@ -119,13 +119,13 @@ func test_write_log_appends():
 
 # Test log clearing
 func test_clear_log_when_disabled():
-	handler.clear_log()
+	handler.clear_log_file()
 	assert_bool(FileAccess.file_exists(test_file_path)).is_false()
 
 func test_clear_log_when_enabled():
 	handler.set_enabled(true)
 	handler.write_log("Message before clear")
-	handler.clear_log()
+	handler.clear_log_file()
 	
 	var file = FileAccess.open(test_file_path, FileAccess.READ)
 	var content = file.get_as_text()

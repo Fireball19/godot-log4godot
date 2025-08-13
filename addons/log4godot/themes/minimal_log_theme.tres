@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="LogTheme" load_steps=2 format=3 uid="uid://tt1j8vdur1i5"]
+
+[ext_resource type="Script" uid="uid://bo6kt8gyv8l72" path="res://addons/log4godot/themes/log_theme.gd" id="1_2vkob"]
+
+[resource]
+script = ExtResource("1_2vkob")
+trace_color = Color(0.803922, 0.811765, 0.823529, 1)
+debug_color = Color(0.803922, 0.811765, 0.823529, 1)
+info_color = Color(0.803922, 0.811765, 0.823529, 1)
+warn_color = Color(0.803922, 0.811765, 0.823529, 1)
+error_color = Color(1, 0, 0, 1)
+fatal_color = Color(1, 0, 0, 1)
+timestamp_color = Color(0.803922, 0.811765, 0.823529, 1)
+theme_name = "Minimal"
+metadata/_custom_type_script = "uid://bo6kt8gyv8l72"

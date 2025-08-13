@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://5yl0ekf5nlh6"]
+
+[ext_resource type="Script" uid="uid://yqc2vgwt2a3r" path="res://example/example_theming.gd" id="1_wp85s"]
+
+[node name="ExampleTheming" type="Node"]
+script = ExtResource("1_wp85s")

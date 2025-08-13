@@ -28,7 +28,7 @@ func write_log(message: String) -> void:
 		file.store_line(message)
 		file.close()
 
-func clear_log() -> void:
+func clear_log_file() -> void:
 	if not is_enabled:
 		return
 		
