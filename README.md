@@ -49,6 +49,13 @@ physics_logger.warn("Collision detection took " + str(delta_time) + "ms")
 
 Log4Godot includes a theming system that allows you to customize the appearance of your logs with built-in themes or create your own.
 
+### Built-in Themes
+
+- **🎯 Default**: Balanced color scheme with distinct colors for each log level (gray, cyan, yellow, red).
+- **🔇 Minimal**: Muted gray for most levels with only errors/fatal in red to reduce visual noise.
+- **⚪ Whiteout**: All text in pure white for complete uniformity and high contrast displays.
+- **🟢 Fallout**: Retro terminal aesthetic with all text in bright green for that classic console feel.
+
 ## 🎛️ Configuration Options
 
 ### Global Settings
