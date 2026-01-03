@@ -2,8 +2,12 @@
 
 [![GdUnit4 Tests](https://github.com/Fireball19/godot-log4godot/actions/workflows/gdunit4-tests.yml/badge.svg?branch=develop)](https://github.com/Fireball19/godot-log4godot/actions/workflows/gdunit4-tests.yml)
 
+<img align="left" src="./icon.svg"/>
+
 A powerful, feature-rich logging system for Godot 4 that brings structured logging to your game development workflow. 
 Inspired by enterprise logging frameworks, Log4Godot provides multiple log levels, named loggers, colored output, theming support, and flexible configuration options.
+
+<br/><br/>
 
 ## ✨ Features
 
