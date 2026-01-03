@@ -5,12 +5,12 @@ var costum_logger: LoggerInstance
 
 func _ready():
 	# Configure the global logger
-	Logger.set_global_level(LogLevel.Level.DEBUG)
-	Logger.set_colors_enabled(true)
-	Logger.set_timestamps_enabled(true)
-	Logger.set_file_logging_enabled(true, "user://themed_game.log")
+	Log4g.set_global_level(LogLevel.Level.DEBUG)
+	Log4g.set_colors_enabled(true)
+	Log4g.set_timestamps_enabled(true)
+	Log4g.set_file_logging_enabled(true, "user://themed_game.log")
 	
-	costum_logger = Logger.get_logger("COSTUM", LogLevel.Level.TRACE)
+	costum_logger = Log4g.get_logger("COSTUM", LogLevel.Level.TRACE)
 	
 	# Try different themes
 	await _demonstrate_themes()
@@ -27,18 +27,18 @@ func _demonstrate_all_levels(logger: LoggerInstance):
 	logger.fatal("FATAL: Critical system failure")
 
 func _demonstrate_themes():
-	var themes = Logger.get_available_themes()
-	Logger.info("Available themes: " + str(themes))
+	var themes = Log4g.get_available_themes()
+	Log4g.info("Available themes: " + str(themes))
 	
 	for theme_name in themes:
-		Logger.set_theme_by_name(theme_name)
-		Logger.info("=== Switched to " + theme_name + " theme ===")
-		_demonstrate_all_levels(Logger.get_global_logger())
+		Log4g.set_theme_by_name(theme_name)
+		Log4g.info("=== Switched to " + theme_name + " theme ===")
+		_demonstrate_all_levels(Log4g.get_global_logger())
 		_demonstrate_all_levels(costum_logger)
 		await get_tree().create_timer(1.0).timeout  # Small delay for visual effect
 
 func _demonstrate_custom_theme():
-	Logger.info("=== Creating Custom Theme ===")
+	Log4g.info("=== Creating Custom Theme ===")
 	
 	# Create a custom "Neon" theme
 	var neon_theme = LogTheme.new()
@@ -52,10 +52,10 @@ func _demonstrate_custom_theme():
 	neon_theme.timestamp_color = Color(0.7, 0.7, 0.7)  # Light gray
 	
 	# Add the custom theme
-	Logger.add_custom_theme("Neon", neon_theme)
+	Log4g.add_custom_theme("Neon", neon_theme)
 	
 	# Use the custom theme
-	Logger.set_theme_by_name("Neon")
-	Logger.info("Now using custom Neon theme!")
-	_demonstrate_all_levels(Logger.get_global_logger())
+	Log4g.set_theme_by_name("Neon")
+	Log4g.info("Now using custom Neon theme!")
+	_demonstrate_all_levels(Log4g.get_global_logger())
 	_demonstrate_all_levels(costum_logger)

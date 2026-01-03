@@ -4,22 +4,22 @@ extends Node
 
 func _ready():
 	# Configure the global logger
-	Logger.set_global_level(LogLevel.Level.DEBUG)
-	Logger.set_colors_enabled(true)
-	Logger.set_timestamps_enabled(true)
-	Logger.set_file_logging_enabled(true, "user://my_game.log")
+	Log4g.set_global_level(LogLevel.Level.DEBUG)
+	Log4g.set_colors_enabled(true)
+	Log4g.set_timestamps_enabled(true)
+	Log4g.set_file_logging_enabled(true, "user://my_game.log")
 	
 	# Using the global logger
-	Logger.info("Game started successfully!")
-	Logger.debug("This is a debug message")
-	Logger.warn("This is a warning message")
-	Logger.error("This is an error message")
-	Logger.trace("This trace message won't show (below global level)")
+	Log4g.info("Game started successfully!")
+	Log4g.debug("This is a debug message")
+	Log4g.warn("This is a warning message")
+	Log4g.error("This is an error message")
+	Log4g.trace("This trace message won't show (below global level)")
 	
 	# Create named loggers for different systems
-	var network_logger = Logger.get_logger("Network", LogLevel.Level.INFO)
-	var ai_logger = Logger.get_logger("AI", LogLevel.Level.DEBUG)
-	var physics_logger = Logger.get_logger("Physics", LogLevel.Level.WARN)
+	var network_logger = Log4g.get_logger("Network", LogLevel.Level.INFO)
+	var ai_logger = Log4g.get_logger("AI", LogLevel.Level.DEBUG)
+	var physics_logger = Log4g.get_logger("Physics", LogLevel.Level.WARN)
 	
 	# Use named loggers
 	network_logger.info("Connected to server")
@@ -38,27 +38,27 @@ func _ready():
 	demonstrate_logger_management()
 
 func demonstrate_log_levels():
-	Logger.info("=== Demonstrating all log levels ===")
+	Log4g.info("=== Demonstrating all log levels ===")
 	
 	# This will show all levels except TRACE (which is below our global level)
-	Logger.trace("TRACE: Very detailed information")
-	Logger.debug("DEBUG: Detailed information for debugging")
-	Logger.info("INFO: General information about program execution")
-	Logger.warn("WARN: Something unexpected happened, but program continues")
-	Logger.error("ERROR: A serious problem occurred")
-	Logger.fatal("FATAL: A critical error that might cause program termination")
+	Log4g.trace("TRACE: Very detailed information")
+	Log4g.debug("DEBUG: Detailed information for debugging")
+	Log4g.info("INFO: General information about program execution")
+	Log4g.warn("WARN: Something unexpected happened, but program continues")
+	Log4g.error("ERROR: A serious problem occurred")
+	Log4g.fatal("FATAL: A critical error that might cause program termination")
 
 func demonstrate_logger_management():
-	Logger.info("=== Logger Management Demo ===")
+	Log4g.info("=== Logger Management Demo ===")
 	
 	# Create some loggers
-	var ui_logger = Logger.get_logger("UI")
-	var sound_logger = Logger.get_logger("Sound")
-	var save_logger = Logger.get_logger("SaveSystem")
+	var ui_logger = Log4g.get_logger("UI")
+	var sound_logger = Log4g.get_logger("Sound")
+	var save_logger = Log4g.get_logger("SaveSystem")
 	
 	# List all loggers
-	var loggers = Logger.list_loggers()
-	Logger.info("Active loggers: " + str(loggers))
+	var loggers = Log4g.list_loggers()
+	Log4g.info("Active loggers: " + str(loggers))
 	
 	# Use the loggers
 	ui_logger.info("Menu opened")
@@ -71,27 +71,27 @@ func demonstrate_logger_management():
 	ui_logger.warn("This will show")
 	
 	# Remove a logger
-	Logger.remove_logger("Sound")
-	Logger.info("Removed Sound logger. Active loggers: " + str(Logger.list_loggers()))
+	Log4g.remove_logger("Sound")
+	Log4g.info("Removed Sound logger. Active loggers: " + str(Log4g.list_loggers()))
 
 func _input(event):
 	if event is InputEventKey and event.pressed:
 		match event.keycode:
 			KEY_1:
-				Logger.info("Key 1 pressed - Info level test")
+				Log4g.info("Key 1 pressed - Info level test")
 			KEY_2:
-				Logger.warn("Key 2 pressed - Warning level test")
+				Log4g.warn("Key 2 pressed - Warning level test")
 			KEY_3:
-				Logger.error("Key 3 pressed - Error level test")
+				Log4g.error("Key 3 pressed - Error level test")
 			KEY_C:
-				Logger.clear_log_file()
-				Logger.info("Log file cleared!")
+				Log4g.clear_log_file()
+				Log4g.info("Log file cleared!")
 			KEY_T:
-				Logger.set_timestamps_enabled(not Logger.enable_timestamps)
-				Logger.info("Timestamps toggled: " + str(Logger.enable_timestamps))
+				Log4g.set_timestamps_enabled(not Log4g.enable_timestamps)
+				Log4g.info("Timestamps toggled: " + str(Log4g.enable_timestamps))
 			KEY_L:
 				# Change global log level
-				var current_level = Logger.get_global_level()
+				var current_level = Log4g.get_global_level()
 				var new_level = (current_level + 1) % 6
-				Logger.set_global_level(new_level)
-				Logger.info("Global log level changed to: " + Logger.log_level_to_string(new_level))
+				Log4g.set_global_level(new_level)
+				Log4g.info("Global log level changed to: " + Log4g.log_level_to_string(new_level))

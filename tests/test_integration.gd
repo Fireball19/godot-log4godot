@@ -10,15 +10,15 @@ func before_test():
 		DirAccess.remove_absolute(test_file_path)
 	
 	# Reset Logger to default state
-	Logger.set_global_level(LogLevel.Level.INFO)
-	Logger.set_colors_enabled(true)
-	Logger.set_timestamps_enabled(true)
-	Logger.set_file_logging_enabled(false)
+	Log4g.set_global_level(LogLevel.Level.INFO)
+	Log4g.set_colors_enabled(true)
+	Log4g.set_timestamps_enabled(true)
+	Log4g.set_file_logging_enabled(false)
 	
 	# Remove any existing named loggers
-	var existing_loggers = Logger.list_loggers()
+	var existing_loggers = Log4g.list_loggers()
 	for logger_name in existing_loggers:
-		Logger.remove_logger(logger_name)
+		Log4g.remove_logger(logger_name)
 
 func after_test():
 	# Clean up test file
@@ -26,24 +26,24 @@ func after_test():
 		DirAccess.remove_absolute(test_file_path)
 	
 	# Clean up any created loggers
-	var existing_loggers = Logger.list_loggers()
+	var existing_loggers = Log4g.list_loggers()
 	for logger_name in existing_loggers:
-		Logger.remove_logger(logger_name)
+		Log4g.remove_logger(logger_name)
 
 # Test complete logging workflow
 func test_complete_logging_workflow():
 	# Configure the system
-	Logger.set_global_level(LogLevel.Level.DEBUG)
-	Logger.set_file_logging_enabled(true, test_file_path)
-	Logger.set_timestamps_enabled(false)  # Easier to test without timestamps
+	Log4g.set_global_level(LogLevel.Level.DEBUG)
+	Log4g.set_file_logging_enabled(true, test_file_path)
+	Log4g.set_timestamps_enabled(false)  # Easier to test without timestamps
 	
 	# Use main logger
-	Logger.info("System initialized")
-	Logger.debug("Debug information")
+	Log4g.info("System initialized")
+	Log4g.debug("Debug information")
 	
 	# Create named loggers
-	var network_logger = Logger.get_logger("Network", LogLevel.Level.INFO)
-	var ai_logger = Logger.get_logger("AI", LogLevel.Level.DEBUG)
+	var network_logger = Log4g.get_logger("Network", LogLevel.Level.INFO)
+	var ai_logger = Log4g.get_logger("AI", LogLevel.Level.DEBUG)
 	
 	# Use named loggers
 	network_logger.info("Connection established")
@@ -68,8 +68,8 @@ func test_complete_logging_workflow():
 
 # Test level hierarchy and filtering
 func test_level_hierarchy():
-	Logger.set_file_logging_enabled(true, test_file_path)
-	Logger.set_timestamps_enabled(false)
+	Log4g.set_file_logging_enabled(true, test_file_path)
+	Log4g.set_timestamps_enabled(false)
 	
 	# Test different global levels
 	var levels_to_test = [
@@ -82,11 +82,11 @@ func test_level_hierarchy():
 	]
 	
 	for global_level in levels_to_test:
-		Logger.set_global_level(global_level)
-		Logger.clear_log_file()
+		Log4g.set_global_level(global_level)
+		Log4g.clear_log_file()
 		
 		# Create logger with lower level than global
-		var test_logger = Logger.get_logger("Test", LogLevel.Level.TRACE)
+		var test_logger = Log4g.get_logger("Test", LogLevel.Level.TRACE)
 		
 		# Try all logging levels
 		test_logger.trace("TRACE message")
@@ -115,16 +115,16 @@ func test_level_hierarchy():
 
 # Test multiple logger interaction
 func test_multiple_logger_interaction():
-	Logger.set_file_logging_enabled(true, test_file_path)
-	Logger.set_timestamps_enabled(false)
-	Logger.set_global_level(LogLevel.Level.DEBUG)
+	Log4g.set_file_logging_enabled(true, test_file_path)
+	Log4g.set_timestamps_enabled(false)
+	Log4g.set_global_level(LogLevel.Level.DEBUG)
 	
 	# Create multiple loggers with different levels
 	var loggers = {
-		"System": Logger.get_logger("System", LogLevel.Level.INFO),
-		"Network": Logger.get_logger("Network", LogLevel.Level.DEBUG),
-		"Database": Logger.get_logger("Database", LogLevel.Level.WARN),
-		"UI": Logger.get_logger("UI", LogLevel.Level.ERROR)
+		"System": Log4g.get_logger("System", LogLevel.Level.INFO),
+		"Network": Log4g.get_logger("Network", LogLevel.Level.DEBUG),
+		"Database": Log4g.get_logger("Database", LogLevel.Level.WARN),
+		"UI": Log4g.get_logger("UI", LogLevel.Level.ERROR)
 	}
 	
 	# Each logger logs at different levels
@@ -169,18 +169,18 @@ func test_multiple_logger_interaction():
 
 # Test configuration changes during runtime
 func test_runtime_configuration_changes():
-	Logger.set_file_logging_enabled(true, test_file_path)
-	Logger.set_timestamps_enabled(false)
+	Log4g.set_file_logging_enabled(true, test_file_path)
+	Log4g.set_timestamps_enabled(false)
 	
-	var test_logger = Logger.get_logger("ConfigTest", LogLevel.Level.DEBUG)
+	var test_logger = Log4g.get_logger("ConfigTest", LogLevel.Level.DEBUG)
 	
 	# Initial configuration
-	Logger.set_global_level(LogLevel.Level.INFO)
+	Log4g.set_global_level(LogLevel.Level.INFO)
 	test_logger.debug("Debug message 1 (should be filtered)")
 	test_logger.info("Info message 1")
 	
 	# Change global level
-	Logger.set_global_level(LogLevel.Level.DEBUG)
+	Log4g.set_global_level(LogLevel.Level.DEBUG)
 	test_logger.debug("Debug message 2 (should appear)")
 	test_logger.info("Info message 2")
 	
@@ -204,12 +204,12 @@ func test_runtime_configuration_changes():
 
 # Test file operations
 func test_file_operations():
-	Logger.set_file_logging_enabled(true, test_file_path)
-	Logger.set_timestamps_enabled(false)
+	Log4g.set_file_logging_enabled(true, test_file_path)
+	Log4g.set_timestamps_enabled(false)
 	
 	# Write some messages
-	Logger.info("Initial message")
-	Logger.warn("Warning message")
+	Log4g.info("Initial message")
+	Log4g.warn("Warning message")
 	
 	var file1 = FileAccess.open(test_file_path, FileAccess.READ)
 	var content1 = file1.get_as_text()
@@ -219,8 +219,8 @@ func test_file_operations():
 	assert_str(content1).contains("Warning message")
 	
 	# Clear the log
-	Logger.clear_log_file()
-	Logger.error("Message after clear")
+	Log4g.clear_log_file()
+	Log4g.error("Message after clear")
 	
 	var file2 = FileAccess.open(test_file_path, FileAccess.READ)
 	var content2 = file2.get_as_text()

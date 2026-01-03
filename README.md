@@ -19,7 +19,7 @@ Inspired by enterprise logging frameworks, Log4Godot provides multiple log level
 1. Download or clone this repository
 2. Copy the `addons/log4godot/` folder to your project's `addons/` directory
 3. Enable "Log4Godot" in Project Settings → Plugins
-4. The `Logger` autoload is automatically configured and ready to use!
+4. The `Log4g` autoload is automatically configured and ready to use!
 
 ## 📖 Quick Start
 
@@ -27,18 +27,18 @@ Inspired by enterprise logging frameworks, Log4Godot provides multiple log level
 ```gdscript
 func _ready():
 	# Simple logging with the global logger
-	Logger.info("Game initialized successfully")
-	Logger.warn("Audio settings not found, using defaults")
-	Logger.error("Failed to connect to server")
-	Logger.debug("Player position: " + str(player.position))
+	Log4g.info("Game initialized successfully")
+	Log4g.warn("Audio settings not found, using defaults")
+	Log4g.error("Failed to connect to server")
+	Log4g.debug("Player position: " + str(player.position))
 ```
 
 ### Named Loggers
 ```gdscript
 # Create specialized loggers for different systems
-var network_logger = Logger.get_logger("Network", LogLevel.Level.DEBUG)
-var ai_logger = Logger.get_logger("AI", LogLevel.Level.INFO)
-var physics_logger = Logger.get_logger("Physics", LogLevel.Level.WARN)
+var network_logger = Log4g.get_logger("Network", LogLevel.Level.DEBUG)
+var ai_logger = Log4g.get_logger("AI", LogLevel.Level.INFO)
+var physics_logger = Log4g.get_logger("Physics", LogLevel.Level.WARN)
 
 # Use them throughout your codebase
 network_logger.debug("Sending packet to server: " + packet_data)
@@ -61,23 +61,23 @@ Log4Godot includes a theming system that allows you to customize the appearance 
 ### Global Settings
 ```gdscript
 # Set minimum log level globally (affects all loggers)
-Logger.set_global_level(LogLevel.Level.INFO)
+Log4g.set_global_level(LogLevel.Level.INFO)
 
 # Toggle colored output in console
-Logger.set_colors_enabled(false)
+Log4g.set_colors_enabled(false)
 
 # Control timestamp display
-Logger.set_timestamps_enabled(true)
+Log4g.set_timestamps_enabled(true)
 
 # File logging configuration
-Logger.set_file_logging_enabled(true, "user://debug.log")
+Log4g.set_file_logging_enabled(true, "user://debug.log")
 ```
 
 ### Per-Logger Control
 ```gdscript
 # Each logger can have its own level
-var verbose_logger = Logger.get_logger("Debug", LogLevel.Level.TRACE)
-var quiet_logger = Logger.get_logger("Release", LogLevel.Level.ERROR)
+var verbose_logger = Log4g.get_logger("Debug", LogLevel.Level.TRACE)
+var quiet_logger = Log4g.get_logger("Release", LogLevel.Level.ERROR)
 
 # Change logger level at runtime
 verbose_logger.set_level(LogLevel.Level.WARN)

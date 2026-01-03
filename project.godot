@@ -10,13 +10,16 @@ config_version=5
 
 [application]
 
-config/name="log4godot"
-config/features=PackedStringArray("4.4", "Forward Plus")
-config/icon="res://icon.svg"
+config/name="Log4Godot"
+config/description="Logging system for Godot 4. Provides multiple log levels, named loggers, colored output, and flexible configuration options."
+config/tags=PackedStringArray("addon", "logging")
+config/features=PackedStringArray("4.5", "Forward Plus")
+config/icon="uid://bu44bhip3e3nd"
 
 [autoload]
 
 Logger="*res://addons/log4godot/logger.gd"
+Log4g="*res://addons/log4godot/logger.gd"
 
 [editor_plugins]
 
