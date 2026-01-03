@@ -7,7 +7,7 @@
 A powerful, feature-rich logging system for Godot 4 that brings structured logging to your game development workflow. 
 Inspired by enterprise logging frameworks, Log4Godot provides multiple log levels, named loggers, colored output, theming support, and flexible configuration options.
 
-<br/><br/>
+<br/>
 
 ## ✨ Features
 
