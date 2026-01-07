@@ -3,7 +3,7 @@ extends Node
 # Example demonstrating the theming features of Log4Godot
 var costum_logger: LoggerInstance
 
-func _ready():
+func _ready() -> void:
 	# Configure the global logger
 	Log4g.set_global_level(LogLevel.Level.DEBUG)
 	Log4g.set_colors_enabled(true)
@@ -18,7 +18,7 @@ func _ready():
 	# Create and use a custom theme
 	_demonstrate_custom_theme()
 
-func _demonstrate_all_levels(logger: LoggerInstance):
+func _demonstrate_all_levels(logger: LoggerInstance) -> void:
 	logger.trace("TRACE: Detailed debugging information")
 	logger.debug("DEBUG: Development debugging message")
 	logger.info("INFO: General information message")
@@ -26,22 +26,22 @@ func _demonstrate_all_levels(logger: LoggerInstance):
 	logger.error("ERROR: An error has occurred")
 	logger.fatal("FATAL: Critical system failure")
 
-func _demonstrate_themes():
-	var themes = Log4g.get_available_themes()
+func _demonstrate_themes() -> void:
+	var themes: Array[String] = Log4g.get_available_themes()
 	Log4g.info("Available themes: " + str(themes))
 	
-	for theme_name in themes:
+	for theme_name: String in themes:
 		Log4g.set_theme_by_name(theme_name)
 		Log4g.info("=== Switched to " + theme_name + " theme ===")
 		_demonstrate_all_levels(Log4g.get_global_logger())
 		_demonstrate_all_levels(costum_logger)
 		await get_tree().create_timer(1.0).timeout  # Small delay for visual effect
 
-func _demonstrate_custom_theme():
+func _demonstrate_custom_theme() -> void:
 	Log4g.info("=== Creating Custom Theme ===")
 	
 	# Create a custom "Neon" theme
-	var neon_theme = LogTheme.new()
+	var neon_theme: LogTheme = LogTheme.new()
 	neon_theme.theme_name = "Neon"
 	neon_theme.trace_color = Color(0.5, 0.5, 1.0)      # Light blue
 	neon_theme.debug_color = Color(1.0, 0.0, 1.0)      # Magenta

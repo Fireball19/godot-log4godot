@@ -2,7 +2,7 @@ extends Node
 
 # Example of how to use the Advanced Logger plugin
 
-func _ready():
+func _ready() -> void:
 	# Configure the global logger
 	Log4g.set_global_level(LogLevel.Level.DEBUG)
 	Log4g.set_colors_enabled(true)
@@ -17,9 +17,9 @@ func _ready():
 	Log4g.trace("This trace message won't show (below global level)")
 	
 	# Create named loggers for different systems
-	var network_logger = Log4g.get_logger("Network", LogLevel.Level.INFO)
-	var ai_logger = Log4g.get_logger("AI", LogLevel.Level.DEBUG)
-	var physics_logger = Log4g.get_logger("Physics", LogLevel.Level.WARN)
+	var network_logger: LoggerInstance = Log4g.get_logger("Network", LogLevel.Level.INFO)
+	var ai_logger: LoggerInstance = Log4g.get_logger("AI", LogLevel.Level.DEBUG)
+	var physics_logger: LoggerInstance = Log4g.get_logger("Physics", LogLevel.Level.WARN)
 	
 	# Use named loggers
 	network_logger.info("Connected to server")
@@ -37,7 +37,7 @@ func _ready():
 	# Show logger management
 	demonstrate_logger_management()
 
-func demonstrate_log_levels():
+func demonstrate_log_levels() -> void:
 	Log4g.info("=== Demonstrating all log levels ===")
 	
 	# This will show all levels except TRACE (which is below our global level)
@@ -48,16 +48,16 @@ func demonstrate_log_levels():
 	Log4g.error("ERROR: A serious problem occurred")
 	Log4g.fatal("FATAL: A critical error that might cause program termination")
 
-func demonstrate_logger_management():
+func demonstrate_logger_management() -> void:
 	Log4g.info("=== Logger Management Demo ===")
 	
 	# Create some loggers
-	var ui_logger = Log4g.get_logger("UI")
-	var sound_logger = Log4g.get_logger("Sound")
-	var save_logger = Log4g.get_logger("SaveSystem")
+	var ui_logger: LoggerInstance = Log4g.get_logger("UI")
+	var sound_logger: LoggerInstance = Log4g.get_logger("Sound")
+	var save_logger: LoggerInstance = Log4g.get_logger("SaveSystem")
 	
 	# List all loggers
-	var loggers = Log4g.list_loggers()
+	var loggers: Array[String] = Log4g.list_loggers()
 	Log4g.info("Active loggers: " + str(loggers))
 	
 	# Use the loggers
@@ -74,24 +74,26 @@ func demonstrate_logger_management():
 	Log4g.remove_logger("Sound")
 	Log4g.info("Removed Sound logger. Active loggers: " + str(Log4g.list_loggers()))
 
-func _input(event):
-	if event is InputEventKey and event.pressed:
-		match event.keycode:
-			KEY_1:
-				Log4g.info("Key 1 pressed - Info level test")
-			KEY_2:
-				Log4g.warn("Key 2 pressed - Warning level test")
-			KEY_3:
-				Log4g.error("Key 3 pressed - Error level test")
-			KEY_C:
-				Log4g.clear_log_file()
-				Log4g.info("Log file cleared!")
-			KEY_T:
-				Log4g.set_timestamps_enabled(not Log4g.enable_timestamps)
-				Log4g.info("Timestamps toggled: " + str(Log4g.enable_timestamps))
-			KEY_L:
-				# Change global log level
-				var current_level = Log4g.get_global_level()
-				var new_level = (current_level + 1) % 6
-				Log4g.set_global_level(new_level)
-				Log4g.info("Global log level changed to: " + Log4g.log_level_to_string(new_level))
+func _input(event: InputEvent) -> void:
+	if event is InputEventKey:
+		var input_event: InputEventKey = event as InputEventKey
+		if input_event.pressed:
+			match input_event.keycode:
+				KEY_1:
+					Log4g.info("Key 1 pressed - Info level test")
+				KEY_2:
+					Log4g.warn("Key 2 pressed - Warning level test")
+				KEY_3:
+					Log4g.error("Key 3 pressed - Error level test")
+				KEY_C:
+					Log4g.clear_log_file()
+					Log4g.info("Log file cleared!")
+				KEY_T:
+					Log4g.set_timestamps_enabled(not Log4g.get_global_logger().output.formatter.enable_timestamps)
+					Log4g.info("Timestamps toggled: " + str(Log4g.get_global_logger().output.formatter.enable_timestamps))
+				KEY_L:
+					# Change global log level
+					var current_level: LogLevel.Level = Log4g.get_global_level()
+					var new_level: int = (current_level + 1) % 6
+					Log4g.set_global_level(new_level)
+					Log4g.info("Global log level changed to: " + Log4g.log_level_to_string(new_level))

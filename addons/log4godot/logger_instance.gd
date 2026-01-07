@@ -7,7 +7,7 @@ var log_level: LogLevel.Level
 var output: LogOutput
 var global_level_provider: Callable
 
-func _init(logger_name: String, level: LogLevel.Level, log_output: LogOutput, global_provider: Callable):
+func _init(logger_name: String, level: LogLevel.Level, log_output: LogOutput, global_provider: Callable) -> void:
 	name = logger_name
 	log_level = level
 	output = log_output
@@ -42,7 +42,7 @@ func is_level_enabled(level: LogLevel.Level) -> bool:
 	return _is_level_enabled(level)
 
 func _is_level_enabled(level: LogLevel.Level) -> bool:
-	var global_level = global_level_provider.call()
+	var global_level: LogLevel.Level = global_level_provider.call()
 	return level >= log_level and level >= global_level
 
 # Logging functions

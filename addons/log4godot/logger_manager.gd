@@ -4,11 +4,11 @@ class_name LoggerManager
 
 var global_log_level: LogLevel.Level = LogLevel.Level.INFO
 var output: LogOutput
-var named_loggers: Dictionary = {}
+var named_loggers: Dictionary[String, LoggerInstance] = {}
 var main_logger: LoggerInstance
-var available_themes: Dictionary = {}
+var available_themes: Dictionary[String, LogTheme] = {}
 
-func _init():
+func _init() -> void:
 	_initialize_default_themes()
 	output = LogOutput.new()
 	output.set_theme(available_themes["Default"])
@@ -58,7 +58,7 @@ func add_custom_theme(theme_name: String, theme: LogTheme) -> void:
 
 func get_available_themes() -> Array[String]:
 	var theme_names: Array[String] = []
-	for key in available_themes.keys():
+	for key: String in available_themes.keys():
 		theme_names.append(key)
 	return theme_names
 
@@ -80,7 +80,7 @@ func remove_logger(logger_name: String) -> bool:
 
 func list_loggers() -> Array[String]:
 	var logger_names: Array[String] = []
-	for key in named_loggers.keys():
+	for key: String in named_loggers.keys():
 		logger_names.append(key)
 	return logger_names
 

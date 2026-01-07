@@ -11,7 +11,7 @@ enum Level {
 	FATAL = 5
 }
 
-const LEVEL_NAMES = {
+const LEVEL_NAMES: Dictionary[LogLevel.Level, String] = {
 	Level.TRACE: "TRACE",
 	Level.DEBUG: "DEBUG",
 	Level.INFO: "INFO",
@@ -20,7 +20,7 @@ const LEVEL_NAMES = {
 	Level.FATAL: "FATAL"
 }
 
-const LEVEL_COLORS = {
+const LEVEL_COLORS: Dictionary[LogLevel.Level, Color] = {
 	Level.TRACE: Color.WHITE,
 	Level.DEBUG: Color.CYAN,
 	Level.INFO: Color.GREEN,

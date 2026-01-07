@@ -1,10 +1,11 @@
 # Logger.gd
 # Main Logger Node - Public API with theming support
 extends Node
+class_name GlobalLogger
 
 var manager: LoggerManager
 
-func _ready():
+func _ready() -> void:
 	manager = LoggerManager.new()
 
 # Global logger methods (shortcuts for main logger)

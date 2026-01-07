@@ -6,7 +6,7 @@ var enable_colors: bool = true
 var formatter: LogFormatter
 var file_handler: FileLogHandler
 
-func _init():
+func _init() -> void:
 	formatter = LogFormatter.new()
 	file_handler = FileLogHandler.new()
 
@@ -32,7 +32,7 @@ func output_log(logger_name: String, level: LogLevel.Level, message: String) -> 
 	_output_to_console(logger_name, level, message)
 	
 	# File output (plain text without colors)
-	var plain_message = formatter.format_message(logger_name, level, message)
+	var plain_message: String = formatter.format_message(logger_name, level, message)
 	file_handler.write_log(plain_message)
 
 func clear_log_file() -> void:
@@ -40,8 +40,8 @@ func clear_log_file() -> void:
 
 func _output_to_console(logger_name: String, level: LogLevel.Level, message: String) -> void:
 	if enable_colors:
-		var colored_message = formatter.format_message_with_colors(logger_name, level, message)
+		var colored_message: String = formatter.format_message_with_colors(logger_name, level, message)
 		print_rich(colored_message)
 	else:
-		var plain_message = formatter.format_message(logger_name, level, message)
+		var plain_message: String = formatter.format_message(logger_name, level, message)
 		print(plain_message)

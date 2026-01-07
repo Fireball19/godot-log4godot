@@ -14,7 +14,7 @@ extends Resource
 
 @export var theme_name: String = "Default"
 
-static var default_themes: Dictionary = {
+static var default_themes: Dictionary[String, LogTheme] = {
 	"Default" : ResourceLoader.load("res://addons/log4godot/themes/default_log_theme.tres"),
 	"Minimal" : ResourceLoader.load("res://addons/log4godot/themes/minimal_log_theme.tres"),
 	"Whiteout" : ResourceLoader.load("res://addons/log4godot/themes/whiteout_log_theme.tres"),
