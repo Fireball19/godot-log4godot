@@ -1,10 +1,10 @@
 # Log4Godot
 
-<div align="center">
+<div align="left">
 	
 [![License](https://img.shields.io/github/license/Fireball19/godot-log4godot)](https://github.com/Fireball19/godot-log4godot/blob/main/LICENSE)
 [![GitHub release badge](https://badgen.net/github/release/Fireball19/godot-log4godot/stable)](https://github.com/Fireball19/godot-log4godot/releases/latest)
-[![GdUnit4 Tests](https://github.com/Fireball19/godot-log4godot/actions/workflows/gdunit4-tests.yml/badge.svg?branch=develop)](https://github.com/Fireball19/godot-log4godot/actions/workflows/gdunit4-tests.yml)
+[![GdUnit4 Tests](https://github.com/Fireball19/godot-log4godot/actions/workflows/ci-develop.yml/badge.svg?branch=develop)](https://github.com/Fireball19/godot-log4godot/actions/workflows/ci-develop.yml)
 
 </div>
 

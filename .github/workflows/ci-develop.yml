@@ -1,4 +1,4 @@
-name: GdUnit4 - Test Runner Action
+name: ci-develop
 on: [push, pull_request]
 
 jobs:
