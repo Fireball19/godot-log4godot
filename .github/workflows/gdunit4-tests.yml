@@ -1,4 +1,4 @@
-name: GdUnit4 Tests
+name: GdUnit4 - Test Runner Action
 on: [push, pull_request]
 
 jobs:
@@ -11,5 +11,6 @@ jobs:
           godot-version: '4.6.1'
           paths: 'res://tests'
           timeout: 10
-          version: 'v6.1.1'
+          version: 'installed'
+          publish-report: false
           report-name: 'log4godot-test-report.xml'
