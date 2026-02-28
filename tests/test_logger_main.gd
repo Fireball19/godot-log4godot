@@ -26,139 +26,6 @@ func after_test() -> void:
 # Test initialization
 func test_logger_initialization() -> void:
 	assert_object(logger_node.manager).is_not_null()
-	assert_object(logger_node.manager.main_logger).is_not_null()
-
-# Test global logger shortcut methods
-func test_trace_shortcut() -> void:
-	logger_node.set_global_level(LogLevel.Level.TRACE)
-	logger_node.set_file_logging_enabled(true, test_file_path)
-	logger_node.trace("Trace message")
-	
-	var file: FileAccess = FileAccess.open(test_file_path, FileAccess.READ)
-	var content: String = file.get_as_text()
-	file.close()
-	
-	assert_str(content).contains("TRACE")
-	assert_str(content).contains("Trace message")
-
-func test_debug_shortcut() -> void:
-	logger_node.set_global_level(LogLevel.Level.DEBUG)
-	logger_node.set_file_logging_enabled(true, test_file_path)
-	logger_node.debug("Debug message")
-	
-	var file: FileAccess = FileAccess.open(test_file_path, FileAccess.READ)
-	var content: String = file.get_as_text()
-	file.close()
-	
-	assert_str(content).contains("DEBUG")
-	assert_str(content).contains("Debug message")
-
-func test_info_shortcut() -> void:
-	logger_node.set_global_level(LogLevel.Level.INFO)
-	logger_node.set_file_logging_enabled(true, test_file_path)
-	logger_node.info("Info message")
-	
-	var file: FileAccess = FileAccess.open(test_file_path, FileAccess.READ)
-	var content: String = file.get_as_text()
-	file.close()
-	
-	assert_str(content).contains("INFO")
-	assert_str(content).contains("Info message")
-
-func test_warn_shortcut() -> void:
-	logger_node.set_global_level(LogLevel.Level.WARN)
-	logger_node.set_file_logging_enabled(true, test_file_path)
-	logger_node.warn("Warn message")
-	
-	var file: FileAccess = FileAccess.open(test_file_path, FileAccess.READ)
-	var content: String = file.get_as_text()
-	file.close()
-	
-	assert_str(content).contains("WARN")
-	assert_str(content).contains("Warn message")
-
-func test_error_shortcut() -> void:
-	logger_node.set_global_level(LogLevel.Level.ERROR)
-	logger_node.set_file_logging_enabled(true, test_file_path)
-	logger_node.error("Error message")
-	
-	var file: FileAccess = FileAccess.open(test_file_path, FileAccess.READ)
-	var content: String = file.get_as_text()
-	file.close()
-	
-	assert_str(content).contains("ERROR")
-	assert_str(content).contains("Error message")
-
-func test_fatal_shortcut() -> void:
-	logger_node.set_global_level(LogLevel.Level.FATAL)
-	logger_node.set_file_logging_enabled(true, test_file_path)
-	logger_node.fatal("Fatal message")
-	
-	var file: FileAccess = FileAccess.open(test_file_path, FileAccess.READ)
-	var content: String = file.get_as_text()
-	file.close()
-	
-	assert_str(content).contains("FATAL")
-	assert_str(content).contains("Fatal message")
-
-func test_log_shortcut() -> void:
-	logger_node.set_global_level(LogLevel.Level.INFO)
-	logger_node.set_file_logging_enabled(true, test_file_path)
-	logger_node.log(LogLevel.Level.INFO, "Generic log message")
-	
-	var file: FileAccess = FileAccess.open(test_file_path, FileAccess.READ)
-	var content: String = file.get_as_text()
-	file.close()
-	
-	assert_str(content).contains("INFO")
-	assert_str(content).contains("Generic log message")
-
-# Test level checking shortcuts
-func test_is_trace_enabled() -> void:
-	logger_node.set_global_level(LogLevel.Level.TRACE)
-	assert_bool(logger_node.is_trace_enabled()).is_true()
-	
-	logger_node.set_global_level(LogLevel.Level.DEBUG)
-	assert_bool(logger_node.is_trace_enabled()).is_false()
-
-func test_is_debug_enabled() -> void:
-	logger_node.set_global_level(LogLevel.Level.DEBUG)
-	assert_bool(logger_node.is_debug_enabled()).is_true()
-	
-	logger_node.set_global_level(LogLevel.Level.INFO)
-	assert_bool(logger_node.is_debug_enabled()).is_false()
-
-func test_is_info_enabled() -> void:
-	logger_node.set_global_level(LogLevel.Level.INFO)
-	assert_bool(logger_node.is_info_enabled()).is_true()
-	
-	logger_node.set_global_level(LogLevel.Level.WARN)
-	assert_bool(logger_node.is_info_enabled()).is_false()
-
-func test_is_warn_enabled() -> void:
-	logger_node.set_global_level(LogLevel.Level.WARN)
-	assert_bool(logger_node.is_warn_enabled()).is_true()
-	
-	logger_node.set_global_level(LogLevel.Level.ERROR)
-	assert_bool(logger_node.is_warn_enabled()).is_false()
-
-func test_is_error_enabled() -> void:
-	logger_node.set_global_level(LogLevel.Level.ERROR)
-	assert_bool(logger_node.is_error_enabled()).is_true()
-	
-	logger_node.set_global_level(LogLevel.Level.FATAL)
-	assert_bool(logger_node.is_error_enabled()).is_false()
-
-func test_is_fatal_enabled() -> void:
-	logger_node.set_global_level(LogLevel.Level.FATAL)
-	assert_bool(logger_node.is_fatal_enabled()).is_true()
-
-func test_is_level_enabled() -> void:
-	logger_node.set_global_level(LogLevel.Level.WARN)
-	
-	assert_bool(logger_node.is_level_enabled(LogLevel.Level.DEBUG)).is_false()
-	assert_bool(logger_node.is_level_enabled(LogLevel.Level.WARN)).is_true()
-	assert_bool(logger_node.is_level_enabled(LogLevel.Level.ERROR)).is_true()
 
 # Test configuration methods
 func test_set_get_global_level() -> void:
@@ -178,7 +45,8 @@ func test_set_file_logging_enabled() -> void:
 
 func test_clear_log_file() -> void:
 	logger_node.set_file_logging_enabled(true, test_file_path)
-	logger_node.info("Message before clear")
+	var logger: LoggerInstance = logger_node.get_logger("TestLogger")
+	logger.info("Message before clear")
 	logger_node.clear_log_file()
 	
 	var file: FileAccess = FileAccess.open(test_file_path, FileAccess.READ)
@@ -228,13 +96,9 @@ func test_log_level_to_string() -> void:
 	assert_str(logger_node.log_level_to_string(LogLevel.Level.ERROR)).is_equal("ERROR")
 
 # Test integration scenarios
-func test_main_logger_vs_named_logger() -> void:
+func test_named_logger_logging() -> void:
 	logger_node.set_file_logging_enabled(true, test_file_path)
 	
-	# Use main logger
-	logger_node.info("Main logger message")
-	
-	# Use named logger
 	var named: LoggerInstance = logger_node.get_logger("Named")
 	named.info("Named logger message")
 	
@@ -242,21 +106,22 @@ func test_main_logger_vs_named_logger() -> void:
 	var content: String = file.get_as_text()
 	file.close()
 	
-	assert_str(content).contains("Main logger message")
 	assert_str(content).contains("Named logger message")
 	assert_str(content).contains("[Named]")
 
-func test_level_filtering_consistency() -> void:
+func test_level_filtering_with_named_logger() -> void:
 	logger_node.set_global_level(LogLevel.Level.WARN)
 	logger_node.set_file_logging_enabled(true, test_file_path)
 	
-	# These should be filtered out
-	logger_node.debug("Debug message")
-	logger_node.info("Info message")
+	var logger: LoggerInstance = logger_node.get_logger("FilterTest", LogLevel.Level.DEBUG)
+	
+	# These should be filtered out by global level
+	logger.debug("Debug message")
+	logger.info("Info message")
 	
 	# These should pass through
-	logger_node.warn("Warn message")
-	logger_node.error("Error message")
+	logger.warn("Warn message")
+	logger.error("Error message")
 	
 	var file: FileAccess = FileAccess.open(test_file_path, FileAccess.READ)
 	var content: String = file.get_as_text()
@@ -288,17 +153,47 @@ func test_configuration_persistence() -> void:
 	
 	assert_str(content).contains("Test error message")
 
-# Test backwards compatibility
-func test_backwards_compatibility() -> void:
-	# Test that the old-style usage still works
-	logger_node.set_global_level(LogLevel.Level.INFO)
+func test_multiple_named_loggers() -> void:
+	logger_node.set_global_level(LogLevel.Level.DEBUG)
 	logger_node.set_file_logging_enabled(true, test_file_path)
 	
-	# Old-style direct logging
-	logger_node.info("Backwards compatible message")
+	var network_logger: LoggerInstance = logger_node.get_logger("Network", LogLevel.Level.DEBUG)
+	var ai_logger: LoggerInstance = logger_node.get_logger("AI", LogLevel.Level.INFO)
+	var physics_logger: LoggerInstance = logger_node.get_logger("Physics", LogLevel.Level.WARN)
+	
+	network_logger.debug("Network debug")
+	ai_logger.info("AI info")
+	physics_logger.warn("Physics warn")
 	
 	var file: FileAccess = FileAccess.open(test_file_path, FileAccess.READ)
 	var content: String = file.get_as_text()
 	file.close()
 	
-	assert_str(content).contains("Backwards compatible message")
+	assert_str(content).contains("[Network]")
+	assert_str(content).contains("[AI]")
+	assert_str(content).contains("[Physics]")
+	assert_str(content).contains("Network debug")
+	assert_str(content).contains("AI info")
+	assert_str(content).contains("Physics warn")
+
+# Test theme management
+func test_get_available_themes() -> void:
+	var themes: Array[String] = logger_node.get_available_themes()
+	assert_array(themes).contains(["Default"])
+	assert_array(themes).contains(["Minimal"])
+	assert_array(themes).contains(["Whiteout"])
+	assert_array(themes).contains(["Fallout"])
+
+func test_set_theme_by_name() -> void:
+	var result: bool = logger_node.set_theme_by_name("Minimal")
+	assert_bool(result).is_true()
+	assert_str(logger_node.get_current_theme().theme_name).is_equal("Minimal")
+
+func test_set_theme_by_name_invalid() -> void:
+	var result: bool = logger_node.set_theme_by_name("NonExistent")
+	assert_bool(result).is_false()
+
+func test_get_theme_by_name() -> void:
+	var theme: LogTheme = logger_node.get_theme_by_name("Default")
+	assert_object(theme).is_not_null()
+	assert_str(theme.theme_name).is_equal("Default")

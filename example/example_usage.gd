@@ -1,6 +1,8 @@
 extends Node
 
 # Example of how to use the Advanced Logger plugin
+@onready
+var log4g: LoggerInstance = Log4g.get_logger("COSTUM", LogLevel.Level.TRACE)
 
 func _ready() -> void:
 	# Configure the global logger
@@ -10,11 +12,11 @@ func _ready() -> void:
 	Log4g.set_file_logging_enabled(true, "user://my_game.log")
 	
 	# Using the global logger
-	Log4g.info("Game started successfully!")
-	Log4g.debug("This is a debug message")
-	Log4g.warn("This is a warning message")
-	Log4g.error("This is an error message")
-	Log4g.trace("This trace message won't show (below global level)")
+	log4g.info("Game started successfully!")
+	log4g.debug("This is a debug message")
+	log4g.warn("This is a warning message")
+	log4g.error("This is an error message")
+	log4g.trace("This trace message won't show (below global level)")
 	
 	# Create named loggers for different systems
 	var network_logger: LoggerInstance = Log4g.get_logger("Network", LogLevel.Level.INFO)
@@ -38,18 +40,18 @@ func _ready() -> void:
 	demonstrate_logger_management()
 
 func demonstrate_log_levels() -> void:
-	Log4g.info("=== Demonstrating all log levels ===")
+	log4g.info("=== Demonstrating all log levels ===")
 	
 	# This will show all levels except TRACE (which is below our global level)
-	Log4g.trace("TRACE: Very detailed information")
-	Log4g.debug("DEBUG: Detailed information for debugging")
-	Log4g.info("INFO: General information about program execution")
-	Log4g.warn("WARN: Something unexpected happened, but program continues")
-	Log4g.error("ERROR: A serious problem occurred")
-	Log4g.fatal("FATAL: A critical error that might cause program termination")
+	log4g.trace("TRACE: Very detailed information")
+	log4g.debug("DEBUG: Detailed information for debugging")
+	log4g.info("INFO: General information about program execution")
+	log4g.warn("WARN: Something unexpected happened, but program continues")
+	log4g.error("ERROR: A serious problem occurred")
+	log4g.fatal("FATAL: A critical error that might cause program termination")
 
 func demonstrate_logger_management() -> void:
-	Log4g.info("=== Logger Management Demo ===")
+	log4g.info("=== Logger Management Demo ===")
 	
 	# Create some loggers
 	var ui_logger: LoggerInstance = Log4g.get_logger("UI")
@@ -58,7 +60,7 @@ func demonstrate_logger_management() -> void:
 	
 	# List all loggers
 	var loggers: Array[String] = Log4g.list_loggers()
-	Log4g.info("Active loggers: " + str(loggers))
+	log4g.info("Active loggers: " + str(loggers))
 	
 	# Use the loggers
 	ui_logger.info("Menu opened")
@@ -72,7 +74,7 @@ func demonstrate_logger_management() -> void:
 	
 	# Remove a logger
 	Log4g.remove_logger("Sound")
-	Log4g.info("Removed Sound logger. Active loggers: " + str(Log4g.list_loggers()))
+	log4g.info("Removed Sound logger. Active loggers: " + str(Log4g.list_loggers()))
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey:
@@ -80,20 +82,20 @@ func _input(event: InputEvent) -> void:
 		if input_event.pressed:
 			match input_event.keycode:
 				KEY_1:
-					Log4g.info("Key 1 pressed - Info level test")
+					log4g.info("Key 1 pressed - Info level test")
 				KEY_2:
-					Log4g.warn("Key 2 pressed - Warning level test")
+					log4g.warn("Key 2 pressed - Warning level test")
 				KEY_3:
-					Log4g.error("Key 3 pressed - Error level test")
+					log4g.error("Key 3 pressed - Error level test")
 				KEY_C:
 					Log4g.clear_log_file()
-					Log4g.info("Log file cleared!")
+					log4g.info("Log file cleared!")
 				KEY_T:
-					Log4g.set_timestamps_enabled(not Log4g.get_global_logger().output.formatter.enable_timestamps)
-					Log4g.info("Timestamps toggled: " + str(Log4g.get_global_logger().output.formatter.enable_timestamps))
+					Log4g.set_timestamps_enabled(not Log4g.get_timestamps_enabled())
+					log4g.info("Timestamps toggled: " + str(Log4g.get_timestamps_enabled()))
 				KEY_L:
 					# Change global log level
 					var current_level: LogLevel.Level = Log4g.get_global_level()
 					var new_level: int = (current_level + 1) % 6
 					Log4g.set_global_level(new_level)
-					Log4g.info("Global log level changed to: " + Log4g.log_level_to_string(new_level))
+					print("Global log level changed to: " + Log4g.log_level_to_string(new_level))

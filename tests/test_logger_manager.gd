@@ -21,21 +21,12 @@ func after_test() -> void:
 func test_initialization() -> void:
 	assert_int(manager.global_log_level).is_equal(LogLevel.Level.INFO)
 	assert_object(manager.output).is_not_null()
-	assert_object(manager.main_logger).is_not_null()
 	assert_int(manager.named_loggers.size()).is_equal(0)
-
-func test_main_logger_initialization() -> void:
-	var main_logger: LoggerInstance = manager.get_main_logger()
-	assert_str(main_logger.name).is_equal("Main")
-	assert_int(main_logger.log_level).is_equal(LogLevel.Level.INFO)
 
 # Test global level management
 func test_set_get_global_level() -> void:
 	manager.set_global_level(LogLevel.Level.ERROR)
 	assert_int(manager.get_global_level()).is_equal(LogLevel.Level.ERROR)
-	
-	# Main logger level should also be updated
-	assert_int(manager.main_logger.log_level).is_equal(LogLevel.Level.ERROR)
 
 func test_global_level_affects_new_loggers() -> void:
 	manager.set_global_level(LogLevel.Level.WARN)
@@ -62,7 +53,8 @@ func test_set_file_logging_enabled() -> void:
 
 func test_clear_log_file() -> void:
 	manager.set_file_logging_enabled(true, test_file_path)
-	manager.get_main_logger().info("Test message")
+	var logger: LoggerInstance = manager.get_logger("TestLogger")
+	logger.info("Test message")
 	
 	manager.clear_log_file()
 	
@@ -188,24 +180,6 @@ func test_configuration_affects_all_loggers() -> void:
 	
 	assert_str(content).contains("Test message 1")
 	assert_str(content).contains("Test message 2")
-
-# Test main logger accessibility
-func test_main_logger_separate_from_named() -> void:
-	var main: LoggerInstance = manager.get_main_logger()
-	var named_main: LoggerInstance = manager.get_logger("Main")
-	
-	print(main)
-	print(named_main)
-	
-	assert_object(main).is_not_same(named_main)
-	assert_str(main.name).is_equal("Main")
-	assert_str(named_main.name).is_equal("Main")
-
-func test_main_logger_global_level_sync() -> void:
-	var main: LoggerInstance = manager.get_main_logger()
-	
-	manager.set_global_level(LogLevel.Level.FATAL)
-	assert_int(main.log_level).is_equal(LogLevel.Level.FATAL)
 
 # Test edge cases
 func test_logger_name_edge_cases() -> void:

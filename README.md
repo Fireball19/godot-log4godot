@@ -10,8 +10,8 @@
 
 <img align="left" src="./icon.svg"/>
 
-A powerful, feature-rich logging system for Godot 4 that brings structured logging to your game development workflow. 
-Inspired by enterprise logging frameworks, Log4Godot provides multiple log levels, named loggers, colored output, theming support, and flexible configuration options.
+Log4Godot brings structured logging to your Godot 4 game development workflow. 
+It provides multiple log levels, named loggers, colored output, theming support, and flexible configuration options.
 
 <br clear="left"/>
 
@@ -33,27 +33,31 @@ Inspired by enterprise logging frameworks, Log4Godot provides multiple log level
 
 ## 📖 Quick Start
 
-### Basic Logging
-```gdscript
-func _ready():
-	# Simple logging with the global logger
-	Log4g.info("Game initialized successfully")
-	Log4g.warn("Audio settings not found, using defaults")
-	Log4g.error("Failed to connect to server")
-	Log4g.debug("Player position: " + str(player.position))
-```
-
 ### Named Loggers
 ```gdscript
-# Create specialized loggers for different systems
-var network_logger = Log4g.get_logger("Network", LogLevel.Level.DEBUG)
-var ai_logger = Log4g.get_logger("AI", LogLevel.Level.INFO)
-var physics_logger = Log4g.get_logger("Physics", LogLevel.Level.WARN)
+func _ready():
+	# Create specialized loggers for different systems
+	var network_logger = Log4g.get_logger("Network", LogLevel.Level.DEBUG)
+	var ai_logger = Log4g.get_logger("AI", LogLevel.Level.INFO)
+	var physics_logger = Log4g.get_logger("Physics", LogLevel.Level.WARN)
+	
+	# Use them throughout your codebase
+	network_logger.debug("Sending packet to server: " + packet_data)
+	ai_logger.info("Enemy AI state changed: PATROL → CHASE")
+	physics_logger.warn("Collision detection took " + str(delta_time) + "ms")
+```
 
-# Use them throughout your codebase
-network_logger.debug("Sending packet to server: " + packet_data)
-ai_logger.info("Enemy AI state changed: PATROL → CHASE")
-physics_logger.warn("Collision detection took " + str(delta_time) + "ms")
+### Logger Instance Methods
+Each logger instance provides convenient logging methods for all levels:
+```gdscript
+var logger = Log4g.get_logger("MySystem")
+
+logger.trace("Detailed trace information")
+logger.debug("Debug information for development")
+logger.info("General information message")
+logger.warn("Warning: something might be wrong")
+logger.error("Error occurred: " + error_message)
+logger.fatal("Critical failure!")
 ```
 ## 🎨 Theming System
 
@@ -95,4 +99,25 @@ verbose_logger.set_level(LogLevel.Level.WARN)
 # Check if specific levels are enabled
 if network_logger.is_debug_enabled():
 	network_logger.debug("Detailed network state: " + get_network_details())
+```
+
+## 📋 Logger Management
+
+```gdscript
+# List all created loggers
+var loggers = Log4g.list_loggers()
+
+# Remove a logger when no longer needed
+Log4g.remove_logger("OldSystem")
+
+# Clear the log file
+Log4g.clear_log_file()
+```
+
+## 🔧 Utility Methods
+
+```gdscript
+# Convert between log levels and strings
+var level = Log4g.log_level_from_string("DEBUG")  # Returns LogLevel.Level.DEBUG
+var name = Log4g.log_level_to_string(LogLevel.Level.ERROR)  # Returns "ERROR"
 ```

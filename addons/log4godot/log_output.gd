@@ -15,6 +15,9 @@ func set_colors_enabled(enabled: bool) -> void:
 
 func set_timestamps_enabled(enabled: bool) -> void:
 	formatter.set_timestamps_enabled(enabled)
+	
+func get_timestamps_enabled() -> bool:
+	return formatter.get_timestamps_enabled()
 
 func set_file_logging_enabled(enabled: bool, file_path: String = "") -> void:
 	if file_path != "":

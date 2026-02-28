@@ -5,14 +5,12 @@ class_name LoggerManager
 var global_log_level: LogLevel.Level = LogLevel.Level.INFO
 var output: LogOutput
 var named_loggers: Dictionary[String, LoggerInstance] = {}
-var main_logger: LoggerInstance
 var available_themes: Dictionary[String, LogTheme] = {}
 
 func _init() -> void:
 	_initialize_default_themes()
 	output = LogOutput.new()
 	output.set_theme(available_themes["Default"])
-	main_logger = LoggerInstance.new("Main", global_log_level, output, _get_global_level)
 	
 func _initialize_default_themes() -> void:
 	available_themes.merge(LogTheme.default_themes)
@@ -23,7 +21,6 @@ func _get_global_level() -> LogLevel.Level:
 # Configuration methods
 func set_global_level(level: LogLevel.Level) -> void:
 	global_log_level = level
-	main_logger.set_level(level)
 
 func get_global_level() -> LogLevel.Level:
 	return global_log_level
@@ -33,6 +30,9 @@ func set_colors_enabled(enabled: bool) -> void:
 
 func set_timestamps_enabled(enabled: bool) -> void:
 	output.set_timestamps_enabled(enabled)
+
+func get_timestamps_enabled() -> bool:
+	return output.get_timestamps_enabled()
 
 func set_file_logging_enabled(enabled: bool, file_path: String = "") -> void:
 	output.set_file_logging_enabled(enabled, file_path)
@@ -83,6 +83,3 @@ func list_loggers() -> Array[String]:
 	for key: String in named_loggers.keys():
 		logger_names.append(key)
 	return logger_names
-
-func get_main_logger() -> LoggerInstance:
-	return main_logger

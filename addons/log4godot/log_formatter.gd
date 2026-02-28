@@ -12,6 +12,9 @@ func _init() -> void:
 func set_timestamps_enabled(enabled: bool) -> void:
 	enable_timestamps = enabled
 
+func get_timestamps_enabled() -> bool:
+	return enable_timestamps
+
 func set_theme(theme: LogTheme) -> void:
 	current_theme = theme
 
