@@ -1,7 +1,8 @@
 # Logger.gd
 # Main Logger Node - Public API with theming support
-extends Node
+@icon("res://addons/log4godot/icons/logger.svg")
 class_name GlobalLogger
+extends Node
 
 var manager: LoggerManager
 

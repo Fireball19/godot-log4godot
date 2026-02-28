@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <!-- Color palette base -->
+  <ellipse cx="8" cy="9" rx="7" ry="5.5" fill="#4a5568"/>
+
+  <!-- Color swatches representing log levels -->
+  <circle cx="4" cy="7.5" r="2.0" fill="#fc8181"/>
+  <circle cx="8" cy="6" r="2.0" fill="#f6e05e"/>
+  <circle cx="12" cy="7.5" r="2.0" fill="#68d391"/>
+  <circle cx="5.85" cy="11.5" r="1.8" fill="#76e4f7"/>
+  <circle cx="10.15" cy="11.5" r="1.8" fill="#e1e1e1"/>
+</svg>

@@ -1,5 +1,6 @@
 # LogTheme.gd
 # Resource class for log theming configuration
+@icon("res://addons/log4godot/icons/log_theme.svg")
 class_name LogTheme
 extends Resource
 
