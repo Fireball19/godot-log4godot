@@ -2,9 +2,10 @@
 
 <div align="left">
 	
-[![License](https://img.shields.io/github/license/Fireball19/godot-log4godot)](https://github.com/Fireball19/godot-log4godot/blob/main/LICENSE)
+[![License badge](https://img.shields.io/github/license/Fireball19/godot-log4godot)](https://github.com/Fireball19/godot-log4godot/blob/main/LICENSE)
 [![GitHub release badge](https://badgen.net/github/release/Fireball19/godot-log4godot/stable)](https://github.com/Fireball19/godot-log4godot/releases/latest)
-[![GdUnit4 Tests](https://github.com/Fireball19/godot-log4godot/actions/workflows/ci-develop.yml/badge.svg?branch=develop)](https://github.com/Fireball19/godot-log4godot/actions/workflows/ci-develop.yml)
+![Godot Version badge](https://img.shields.io/badge/Godot-v4.6-%23478cbf?logo=godot-engine&logoColor=white)
+[![GdUnit4 Tests badge](https://github.com/Fireball19/godot-log4godot/actions/workflows/ci-develop.yml/badge.svg?branch=develop)](https://github.com/Fireball19/godot-log4godot/actions/workflows/ci-develop.yml)
 
 </div>
 
