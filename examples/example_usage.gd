@@ -1,3 +1,8 @@
+## Example demonstrating basic usage of the Log4Godot logging plugin.
+##
+## This example shows how to configure the global logger, create named loggers
+## for different game systems, use various log levels, and manage loggers at runtime.
+## It also demonstrates keyboard input handling to interactively test logging features.
 extends Node
 
 # Example of how to use the Advanced Logger plugin

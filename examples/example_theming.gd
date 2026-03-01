@@ -1,3 +1,8 @@
+## Example demonstrating the theming features of Log4Godot.
+##
+## This example shows how to switch between built-in themes, create custom themes
+## with personalized colors for each log level, and register them for use throughout
+## your application.
 extends Node
 
 # Example demonstrating the theming features of Log4Godot

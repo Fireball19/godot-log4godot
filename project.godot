@@ -39,3 +39,11 @@ gdscript/warnings/unsafe_call_argument=1
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/gdUnit4/plugin.cfg", "res://addons/log4godot/plugin.cfg")
+
+[file_customization]
+
+folder_colors={
+"res://addons/log4godot/": "green",
+"res://examples/": "green",
+"res://tests/": "green"
+}
