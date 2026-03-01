@@ -31,9 +31,8 @@ func format_message(logger_name: String, level: LogLevel.Level, message: String)
 	# Add log level
 	parts.append("[" + LogLevel.level_to_string(level) + "]")
 	
-	# Add logger name if not main
-	if logger_name != "Main":
-		parts.append("[" + logger_name + "]")
+	# Add logger name
+	parts.append("[" + logger_name + "]")
 	
 	# Add the actual message
 	parts.append(message)
@@ -52,10 +51,9 @@ func format_message_with_colors(logger_name: String, level: LogLevel.Level, mess
 	var level_str: String = "[" + LogLevel.level_to_string(level) + "]"
 	parts.append(_colorize(level_str, current_theme.get_color_for_level(level)))
 	
-	# Add logger name if not main
-	if logger_name != "Main":
-		var logger_str: String = "[" + logger_name + "]"
-		parts.append(_colorize(logger_str, current_theme.get_color_for_level(level)))
+	# Add logger name
+	var logger_str: String = "[" + logger_name + "]"
+	parts.append(_colorize(logger_str, current_theme.get_color_for_level(level)))
 	
 	# Add the actual message with level-specific color
 	parts.append(_colorize(message, current_theme.get_color_for_level(level)))

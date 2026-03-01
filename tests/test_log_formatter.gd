@@ -29,13 +29,6 @@ func test_format_message_without_timestamps() -> void:
 	var expected: String = "[INFO] [TestLogger] Test message"
 	assert_str(result).is_equal(expected)
 
-func test_format_message_main_logger_without_timestamps() -> void:
-	formatter.set_timestamps_enabled(false)
-	
-	var result: String = formatter.format_message("Main", LogLevel.Level.ERROR, "Error message")
-	var expected: String = "[ERROR] Error message"
-	assert_str(result).is_equal(expected)
-
 func test_format_message_different_levels_without_timestamps() -> void:
 	formatter.set_timestamps_enabled(false)
 	
@@ -68,19 +61,6 @@ func test_format_message_with_timestamps() -> void:
 	assert_str(result).contains("[INFO]")
 	assert_str(result).contains("[TestLogger]")
 	assert_str(result).contains("Test message")
-
-func test_format_message_with_timestamps_main_logger() -> void:
-	formatter.set_timestamps_enabled(true)
-	
-	var result: String = formatter.format_message("Main", LogLevel.Level.WARN, "Warning message")
-	
-	var timestamp_regex: RegEx = RegEx.new()
-	timestamp_regex.compile(r"\[\d{2}:\d{2}:\d{2}\.\d{3}\]")
-	
-	assert_object(timestamp_regex.search(result)).is_not_null()
-	assert_str(result).contains("[WARN]")
-	assert_str(result).not_contains("[Main]")
-	assert_str(result).contains("Warning message")
 
 # Test timestamp format
 func test_timestamp_format() -> void:
