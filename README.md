@@ -20,6 +20,7 @@ It provides multiple log levels, named loggers, colored output, theming support,
 
 - **6 Log Levels**: TRACE, DEBUG, INFO, WARN, ERROR, FATAL with intuitive color coding
 - **Named Loggers**: Create dedicated loggers for different systems (Network, AI, Physics, UI, etc.)
+- **Automatic Logger Naming**: Use `get_logger_for(self)` to automatically derive logger names from your classes
 - **Dual Output**: Beautiful colored console output plus optional file logging
 - **Theming System**: 4 built-in themes with custom theme support for personalized styling
 - **Timestamp Support**: Configurable timestamp formatting with millisecond precision
@@ -33,6 +34,38 @@ It provides multiple log levels, named loggers, colored output, theming support,
 4. The `Log4g` autoload is automatically configured and ready to use!
 
 ## 📖 Quick Start
+
+### Automatic Logger Creation
+The easiest way to create a logger is using `get_logger_for(self)`, which automatically derives the logger name from your class:
+
+```gdscript
+class_name Player
+extends CharacterBody2D
+
+@onready
+var logger: LoggerInstance = Log4g.get_logger_for(self)
+
+func _ready():
+    # Automatically creates a logger named "Player"
+    logger.info("Player initialized")
+    
+func take_damage(amount: int):
+    logger.debug("Taking damage: " + str(amount))
+```
+
+The logger name is determined by:
+1. The `class_name` if defined in your script
+2. The script filename (converted to PascalCase) if no `class_name` is set
+3. The Godot base class name if no script is attached
+
+```gdscript
+# File: enemy_ai.gd (no class_name defined)
+extends Node2D
+
+# Creates a logger named "EnemyAi" (derived from filename)
+@onready
+var logger = Log4g.get_logger_for(self)
+```
 
 ### Named Loggers
 ```gdscript
@@ -93,6 +126,9 @@ Log4g.set_file_logging_enabled(true, "user://debug.log")
 # Each logger can have its own level
 var verbose_logger = Log4g.get_logger("Debug", LogLevel.Level.TRACE)
 var quiet_logger = Log4g.get_logger("Release", LogLevel.Level.ERROR)
+
+# Or use automatic naming with custom level
+var player_logger = Log4g.get_logger_for(self, LogLevel.Level.DEBUG)
 
 # Change logger level at runtime
 verbose_logger.set_level(LogLevel.Level.WARN)

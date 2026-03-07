@@ -4,6 +4,9 @@ extends GdUnitTestSuite
 
 var test_file_path: String = "user://test_integration.log"
 
+@onready
+var logger: LoggerInstance = Log4g.get_logger_for(self, LogLevel.Level.DEBUG)
+
 func before_test() -> void:
 	# Clean up any existing test file
 	if FileAccess.file_exists(test_file_path):
@@ -38,8 +41,8 @@ func test_complete_logging_workflow() -> void:
 	Log4g.set_timestamps_enabled(false)  # Easier to test without timestamps
 	
 	# Use main logger
-	Log4g.info("System initialized")
-	Log4g.debug("Debug information")
+	logger.info("System initialized")
+	logger.debug("Debug information")
 	
 	# Create named loggers
 	var network_logger: LoggerInstance = Log4g.get_logger("Network", LogLevel.Level.INFO)
@@ -57,8 +60,8 @@ func test_complete_logging_workflow() -> void:
 	file.close()
 	
 	# Check main logger messages
-	assert_str(content).contains("System initialized")
-	assert_str(content).contains("Debug information")
+	assert_str(content).contains("[TestIntegration] System initialized")
+	assert_str(content).contains("[TestIntegration] Debug information")
 	
 	# Check named logger messages
 	assert_str(content).contains("[Network] Connection established")
@@ -208,8 +211,8 @@ func test_file_operations() -> void:
 	Log4g.set_timestamps_enabled(false)
 	
 	# Write some messages
-	Log4g.info("Initial message")
-	Log4g.warn("Warning message")
+	logger.info("Initial message")
+	logger.warn("Warning message")
 	
 	var file1: FileAccess = FileAccess.open(test_file_path, FileAccess.READ)
 	var content1: String = file1.get_as_text()
@@ -220,7 +223,7 @@ func test_file_operations() -> void:
 	
 	# Clear the log
 	Log4g.clear_log_file()
-	Log4g.error("Message after clear")
+	logger.error("Message after clear")
 	
 	var file2: FileAccess = FileAccess.open(test_file_path, FileAccess.READ)
 	var content2: String = file2.get_as_text()

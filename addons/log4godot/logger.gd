@@ -131,6 +131,27 @@ func get_theme_by_name(theme_name: String) -> LogTheme:
 func get_logger(logger_name: String, level: LogLevel.Level = LogLevel.Level.INFO) -> LoggerInstance:
 	return manager.get_logger(logger_name, level)
 
+## Creates or retrieves a logger using the name derived from the given object.
+## The logger name is determined in the following priority:
+## 1. The class_name if defined in the script
+## 2. The script filename (without extension) if no class_name
+## 3. The Godot base class name if no script is attached
+## [br][br]
+## Example usage:
+## [codeblock]
+## class_name Player
+## extends CharacterBody2D
+##
+## var logger: LoggerInstance
+##
+## func _ready():
+##     logger = Log4g.get_logger_for(self)  # Creates logger named "Player"
+##     logger.info("Player initialized")
+## [/codeblock]
+func get_logger_for(object: Object, level: LogLevel.Level = LogLevel.Level.INFO) -> LoggerInstance:
+	var logger_name: String = LoggerNameResolver.derive_logger_name(object)
+	return manager.get_logger(logger_name, level)
+
 ## Removes a named logger from the manager.
 ## [br][br]
 ## [param logger_name]: The name of the logger to remove.
