@@ -14,17 +14,17 @@ var global_log_level: LogLevel.Level = LogLevel.Level.INFO
 var output: LogOutput
 
 ## Dictionary of named logger instances, keyed by their string names.
-var named_loggers: Dictionary[String, LoggerInstance] = {}
+var named_loggers: Dictionary[StringName, LoggerInstance] = {}
 
 ## Dictionary of available themes, keyed by their string names.
 ## Includes both built-in themes and any custom themes added at runtime.
-var available_themes: Dictionary[String, LogTheme] = {}
+var available_themes: Dictionary[StringName, LogTheme] = {}
 
 ## Initializes the manager with default themes and output configuration.
 func _init() -> void:
 	_initialize_default_themes()
 	output = LogOutput.new()
-	output.set_theme(available_themes["Default"])
+	output.set_theme(available_themes[&"Default"])
 
 ## Loads the default built-in themes into the available themes dictionary.
 func _initialize_default_themes() -> void:
@@ -92,7 +92,7 @@ func set_theme(theme: LogTheme) -> void:
 ## [param theme_name]: The name of a registered theme (e.g., "Default", "Minimal").
 ## [br][br]
 ## Returns [code]true[/code] if the theme was found and set, [code]false[/code] otherwise.
-func set_theme_by_name(theme_name: String) -> bool:
+func set_theme_by_name(theme_name: StringName) -> bool:
 	if available_themes.has(theme_name):
 		output.set_theme(available_themes[theme_name])
 		return true
@@ -108,7 +108,7 @@ func get_current_theme() -> LogTheme:
 ## [br][br]
 ## [param theme_name]: The name to register the theme under.
 ## [param theme]: The [LogTheme] resource to register.
-func add_custom_theme(theme_name: String, theme: LogTheme) -> void:
+func add_custom_theme(theme_name: StringName, theme: LogTheme) -> void:
 	available_themes[theme_name] = theme
 
 ## Gets a list of all available theme names.
@@ -116,7 +116,7 @@ func add_custom_theme(theme_name: String, theme: LogTheme) -> void:
 ## Returns an [Array] of [String] containing all registered theme names.
 func get_available_themes() -> Array[String]:
 	var theme_names: Array[String] = []
-	for key: String in available_themes.keys():
+	for key: StringName in available_themes.keys():
 		theme_names.append(key)
 	return theme_names
 
@@ -125,7 +125,7 @@ func get_available_themes() -> Array[String]:
 ## [param theme_name]: The name of the theme to retrieve.
 ## [br][br]
 ## Returns the [LogTheme] if found, or [code]null[/code] if not registered.
-func get_theme_by_name(theme_name: String) -> LogTheme:
+func get_theme_by_name(theme_name: StringName) -> LogTheme:
 	return available_themes.get(theme_name)
 
 #endregion
@@ -138,7 +138,7 @@ func get_theme_by_name(theme_name: String) -> LogTheme:
 ## [param level]: The initial log level for new loggers. Defaults to the current global level.
 ## [br][br]
 ## Returns the [LoggerInstance] for the specified name.
-func get_logger(logger_name: String, level: LogLevel.Level = global_log_level) -> LoggerInstance:
+func get_logger(logger_name: StringName, level: LogLevel.Level = global_log_level) -> LoggerInstance:
 	if not named_loggers.has(logger_name):
 		named_loggers[logger_name] = LoggerInstance.new(logger_name, level, output, _get_global_level)
 	return named_loggers[logger_name]
@@ -148,7 +148,7 @@ func get_logger(logger_name: String, level: LogLevel.Level = global_log_level) -
 ## [param logger_name]: The name of the logger to remove.
 ## [br][br]
 ## Returns [code]true[/code] if the logger was found and removed, [code]false[/code] otherwise.
-func remove_logger(logger_name: String) -> bool:
+func remove_logger(logger_name: StringName) -> bool:
 	if named_loggers.has(logger_name):
 		named_loggers.erase(logger_name)
 		return true
@@ -159,6 +159,6 @@ func remove_logger(logger_name: String) -> bool:
 ## Returns an [Array] of [String] containing all logger names.
 func list_loggers() -> Array[String]:
 	var logger_names: Array[String] = []
-	for key: String in named_loggers.keys():
+	for key: StringName in named_loggers.keys():
 		logger_names.append(key)
 	return logger_names

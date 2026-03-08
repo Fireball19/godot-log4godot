@@ -82,7 +82,7 @@ func set_theme(theme: LogTheme) -> void:
 ## [param theme_name]: The name of a registered theme.
 ## [br][br]
 ## Returns [code]true[/code] if the theme was found and set, [code]false[/code] otherwise.
-func set_theme_by_name(theme_name: String) -> bool:
+func set_theme_by_name(theme_name: StringName) -> bool:
 	return manager.set_theme_by_name(theme_name)
 
 ## Gets the currently active theme.
@@ -95,7 +95,7 @@ func get_current_theme() -> LogTheme:
 ## [br][br]
 ## [param theme_name]: The name to register the theme under.
 ## [param theme]: The [LogTheme] resource to register.
-func add_custom_theme(theme_name: String, theme: LogTheme) -> void:
+func add_custom_theme(theme_name: StringName, theme: LogTheme) -> void:
 	manager.add_custom_theme(theme_name, theme)
 
 ## Gets a list of all available theme names (built-in and custom).
@@ -109,7 +109,7 @@ func get_available_themes() -> Array[String]:
 ## [param theme_name]: The name of the theme to retrieve.
 ## [br][br]
 ## Returns the [LogTheme] if found, or [code]null[/code] if not registered.
-func get_theme_by_name(theme_name: String) -> LogTheme:
+func get_theme_by_name(theme_name: StringName) -> LogTheme:
 	return manager.get_theme_by_name(theme_name)
 
 #endregion
@@ -128,7 +128,7 @@ func get_theme_by_name(theme_name: String) -> LogTheme:
 ## var ai_logger = Log4g.get_logger("AI", LogLevel.Level.DEBUG)
 ## ai_logger.debug("AI state: " + state_name)
 ## [/codeblock]
-func get_logger(logger_name: String, level: LogLevel.Level = LogLevel.Level.INFO) -> LoggerInstance:
+func get_logger(logger_name: StringName, level: LogLevel.Level = LogLevel.Level.INFO) -> LoggerInstance:
 	return manager.get_logger(logger_name, level)
 
 ## Creates or retrieves a logger using the name derived from the given object.
@@ -149,7 +149,7 @@ func get_logger(logger_name: String, level: LogLevel.Level = LogLevel.Level.INFO
 ##     logger.info("Player initialized")
 ## [/codeblock]
 func get_logger_for(object: Object, level: LogLevel.Level = LogLevel.Level.INFO) -> LoggerInstance:
-	var logger_name: String = LoggerNameResolver.derive_logger_name(object)
+	var logger_name: StringName = LoggerNameResolver.derive_logger_name(object)
 	return manager.get_logger(logger_name, level)
 
 ## Removes a named logger from the manager.
@@ -157,7 +157,7 @@ func get_logger_for(object: Object, level: LogLevel.Level = LogLevel.Level.INFO)
 ## [param logger_name]: The name of the logger to remove.
 ## [br][br]
 ## Returns [code]true[/code] if the logger was found and removed, [code]false[/code] otherwise.
-func remove_logger(logger_name: String) -> bool:
+func remove_logger(logger_name: StringName) -> bool:
 	return manager.remove_logger(logger_name)
 
 ## Gets a list of all registered logger names.
@@ -172,7 +172,7 @@ func list_loggers() -> Array[String]:
 ## [param level_string]: The string to convert (e.g., "DEBUG", "ERROR").
 ## [br][br]
 ## Returns the corresponding [enum LogLevel.Level] value.
-func log_level_from_string(level_string: String) -> LogLevel.Level:
+func log_level_from_string(level_string: StringName) -> LogLevel.Level:
 	return LogLevel.from_string(level_string)
 
 ## Converts a log level enum value to its string representation.

@@ -14,7 +14,7 @@ class_name LoggerInstance
 
 ## The unique name identifying this logger instance.
 ## Used in formatted output to identify the source of log messages.
-var name: String
+var name: StringName
 
 ## The minimum log level for this logger instance.
 ## Messages below this level will be filtered out (unless overridden by global level).
@@ -33,7 +33,7 @@ var global_level_provider: Callable
 ## [param level]: The initial minimum log level for this logger.
 ## [param log_output]: The [LogOutput] instance to use for message output.
 ## [param global_provider]: A [Callable] that returns the current global [enum LogLevel.Level].
-func _init(logger_name: String, level: LogLevel.Level, log_output: LogOutput, global_provider: Callable) -> void:
+func _init(logger_name: StringName, level: LogLevel.Level, log_output: LogOutput, global_provider: Callable) -> void:
 	name = logger_name
 	log_level = level
 	output = log_output

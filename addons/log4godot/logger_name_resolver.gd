@@ -9,7 +9,7 @@ class_name LoggerNameResolver
 ## 1. The class_name if defined in the script
 ## 2. The script filename (without extension) converted to PascalCase
 ## 3. The Godot base class name if no script is attached
-static func derive_logger_name(object: Object) -> String:
+static func derive_logger_name(object: Object) -> StringName:
 	if object == null:
 		return "Unknown"
 	
@@ -17,7 +17,7 @@ static func derive_logger_name(object: Object) -> String:
 	
 	if script != null:
 		# Priority 1: Use class_name if defined
-		var global_name: String = script.get_global_name()
+		var global_name: StringName = script.get_global_name()
 		if global_name != "":
 			return global_name
 		
@@ -33,7 +33,7 @@ static func derive_logger_name(object: Object) -> String:
 
 ## Converts a snake_case or kebab-case string to PascalCase.
 ## Example: "my_player_script" -> "MyPlayerScript"
-static func to_pascal_case(text: String) -> String:
+static func to_pascal_case(text: String) -> StringName:
 	var result: String = ""
 	var capitalize_next: bool = true
 	

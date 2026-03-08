@@ -50,16 +50,16 @@ extends Resource
 
 ## The display name of this theme.
 ## Used for identification when listing or selecting themes.
-@export var theme_name: String = "Default"
+@export var theme_name: StringName = &"Default"
 
 ## Dictionary of built-in default themes.
 ## Loaded from resource files in the themes directory.
 ## Available themes: "Default", "Minimal", "Whiteout", "Fallout"
-static var default_themes: Dictionary[String, LogTheme] = {
-	"Default" : ResourceLoader.load("res://addons/log4godot/themes/default_log_theme.tres"),
-	"Minimal" : ResourceLoader.load("res://addons/log4godot/themes/minimal_log_theme.tres"),
-	"Whiteout" : ResourceLoader.load("res://addons/log4godot/themes/whiteout_log_theme.tres"),
-	"Fallout" : ResourceLoader.load("res://addons/log4godot/themes/fallout_log_theme.tres")
+static var default_themes: Dictionary[StringName, LogTheme] = {
+	&"Default" : ResourceLoader.load("res://addons/log4godot/themes/default_log_theme.tres"),
+	&"Minimal" : ResourceLoader.load("res://addons/log4godot/themes/minimal_log_theme.tres"),
+	&"Whiteout" : ResourceLoader.load("res://addons/log4godot/themes/whiteout_log_theme.tres"),
+	&"Fallout" : ResourceLoader.load("res://addons/log4godot/themes/fallout_log_theme.tres")
 }
 
 ## Gets the color associated with a specific log level.

@@ -23,13 +23,13 @@ enum Level {
 }
 
 ## Dictionary mapping log levels to their string representations.
-const LEVEL_NAMES: Dictionary[LogLevel.Level, String] = {
-	Level.TRACE: "TRACE",
-	Level.DEBUG: "DEBUG",
-	Level.INFO: "INFO",
-	Level.WARN: "WARN",
-	Level.ERROR: "ERROR",
-	Level.FATAL: "FATAL"
+const LEVEL_NAMES: Dictionary[LogLevel.Level, StringName] = {
+	Level.TRACE: &"TRACE",
+	Level.DEBUG: &"DEBUG",
+	Level.INFO: &"INFO",
+	Level.WARN: &"WARN",
+	Level.ERROR: &"ERROR",
+	Level.FATAL: &"FATAL"
 }
 
 ## Dictionary mapping log levels to their default display colors.
@@ -48,7 +48,7 @@ const LEVEL_COLORS: Dictionary[LogLevel.Level, Color] = {
 ## [param level_string]: The string to convert (e.g., "DEBUG", "debug", "Warning").
 ## [br][br]
 ## Returns the corresponding [enum Level] value, or [constant Level.INFO] if not recognized.
-static func from_string(level_string: String) -> Level:
+static func from_string(level_string: StringName) -> Level:
 	match level_string.to_upper():
 		"TRACE":
 			return Level.TRACE

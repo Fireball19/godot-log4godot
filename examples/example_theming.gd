@@ -7,7 +7,7 @@ extends Node
 
 # Example demonstrating the theming features of Log4Godot
 @onready
-var log4g: LoggerInstance = Log4g.get_logger("COSTUM", LogLevel.Level.TRACE)
+var log4g: LoggerInstance = Log4g.get_logger(&"COSTUM", LogLevel.Level.TRACE)
 
 func _ready() -> void:
 	# Configure the global logger
@@ -45,7 +45,7 @@ func _demonstrate_custom_theme() -> void:
 	
 	# Create a custom "Neon" theme
 	var neon_theme: LogTheme = LogTheme.new()
-	neon_theme.theme_name = "Neon"
+	neon_theme.theme_name = &"Neon"
 	neon_theme.trace_color = Color(0.5, 0.5, 1.0)      # Light blue
 	neon_theme.debug_color = Color(1.0, 0.0, 1.0)      # Magenta
 	neon_theme.info_color = Color(0.0, 1.0, 1.0)       # Cyan
@@ -55,9 +55,9 @@ func _demonstrate_custom_theme() -> void:
 	neon_theme.timestamp_color = Color(0.7, 0.7, 0.7)  # Light gray
 	
 	# Add the custom theme
-	Log4g.add_custom_theme("Neon", neon_theme)
+	Log4g.add_custom_theme(&"Neon", neon_theme)
 	
 	# Use the custom theme
-	Log4g.set_theme_by_name("Neon")
+	Log4g.set_theme_by_name(&"Neon")
 	log4g.info("Now using custom Neon theme!")
 	_demonstrate_all_levels(log4g)

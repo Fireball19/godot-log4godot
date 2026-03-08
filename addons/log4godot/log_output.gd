@@ -66,7 +66,7 @@ func get_theme() -> LogTheme:
 ## [param logger_name]: The name of the logger producing the message.
 ## [param level]: The [enum LogLevel.Level] of the message.
 ## [param message]: The actual log message content.
-func output_log(logger_name: String, level: LogLevel.Level, message: String) -> void:
+func output_log(logger_name: StringName, level: LogLevel.Level, message: String) -> void:
 	# Console output (with colors if enabled)
 	_output_to_console(logger_name, level, message)
 	
@@ -86,7 +86,7 @@ func clear_log_file() -> void:
 ## [param logger_name]: The name of the logger producing the message.
 ## [param level]: The [enum LogLevel.Level] of the message.
 ## [param message]: The actual log message content.
-func _output_to_console(logger_name: String, level: LogLevel.Level, message: String) -> void:
+func _output_to_console(logger_name: StringName, level: LogLevel.Level, message: String) -> void:
 	if enable_colors:
 		var colored_message: String = formatter.format_message_with_colors(logger_name, level, message)
 		print_rich(colored_message)

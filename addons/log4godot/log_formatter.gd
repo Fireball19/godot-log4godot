@@ -17,7 +17,7 @@ var current_theme: LogTheme
 
 ## Initializes the formatter with the default theme.
 func _init() -> void:
-	current_theme = LogTheme.default_themes["Default"]
+	current_theme = LogTheme.default_themes[&"Default"]
 
 ## Enables or disables timestamp inclusion in formatted messages.
 ## [br][br]
@@ -50,7 +50,7 @@ func get_theme() -> LogTheme:
 ## [param message]: The actual log message content.
 ## [br][br]
 ## Returns a formatted string in the format: [timestamp] [LEVEL] [LoggerName] message
-func format_message(logger_name: String, level: LogLevel.Level, message: String) -> String:
+func format_message(logger_name: StringName, level: LogLevel.Level, message: String) -> String:
 	var parts: Array[String] = []
 	
 	# Add timestamp if enabled
@@ -76,7 +76,7 @@ func format_message(logger_name: String, level: LogLevel.Level, message: String)
 ## [br][br]
 ## Returns a BBCode-formatted string with colors applied based on the current theme.
 ## [br]Use with [method print_rich] for colored console output.
-func format_message_with_colors(logger_name: String, level: LogLevel.Level, message: String) -> String:
+func format_message_with_colors(logger_name: StringName, level: LogLevel.Level, message: String) -> String:
 	var parts: Array[String] = []
 	
 	# Add timestamp if enabled

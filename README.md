@@ -64,16 +64,16 @@ extends Node2D
 
 # Creates a logger named "EnemyAi" (derived from filename)
 @onready
-var logger = Log4g.get_logger_for(self)
+var logger: LoggerInstance = Log4g.get_logger_for(self)
 ```
 
 ### Named Loggers
 ```gdscript
 func _ready():
 	# Create specialized loggers for different systems
-	var network_logger = Log4g.get_logger("Network", LogLevel.Level.DEBUG)
-	var ai_logger = Log4g.get_logger("AI", LogLevel.Level.INFO)
-	var physics_logger = Log4g.get_logger("Physics", LogLevel.Level.WARN)
+	var network_logger = Log4g.get_logger(&"Network", LogLevel.Level.DEBUG)
+	var ai_logger = Log4g.get_logger(&"AI", LogLevel.Level.INFO)
+	var physics_logger = Log4g.get_logger(&"Physics", LogLevel.Level.WARN)
 	
 	# Use them throughout your codebase
 	network_logger.debug("Sending packet to server: " + packet_data)
@@ -84,7 +84,7 @@ func _ready():
 ### Logger Instance Methods
 Each logger instance provides convenient logging methods for all levels:
 ```gdscript
-var logger = Log4g.get_logger("MySystem")
+var logger: LoggerInstance = Log4g.get_logger(&"MySystem")
 
 logger.trace("Detailed trace information")
 logger.debug("Debug information for development")
@@ -124,11 +124,11 @@ Log4g.set_file_logging_enabled(true, "user://debug.log")
 ### Per-Logger Control
 ```gdscript
 # Each logger can have its own level
-var verbose_logger = Log4g.get_logger("Debug", LogLevel.Level.TRACE)
-var quiet_logger = Log4g.get_logger("Release", LogLevel.Level.ERROR)
+var verbose_logger: LoggerInstance = Log4g.get_logger(&"Debug", LogLevel.Level.TRACE)
+var quiet_logger: LoggerInstance = Log4g.get_logger(&"Release", LogLevel.Level.ERROR)
 
 # Or use automatic naming with custom level
-var player_logger = Log4g.get_logger_for(self, LogLevel.Level.DEBUG)
+var player_logger: LoggerInstance = Log4g.get_logger_for(self, LogLevel.Level.DEBUG)
 
 # Change logger level at runtime
 verbose_logger.set_level(LogLevel.Level.WARN)
@@ -142,10 +142,10 @@ if network_logger.is_debug_enabled():
 
 ```gdscript
 # List all created loggers
-var loggers = Log4g.list_loggers()
+var loggers: Array[String] = Log4g.list_loggers()
 
 # Remove a logger when no longer needed
-Log4g.remove_logger("OldSystem")
+Log4g.remove_logger(&"OldSystem")
 
 # Clear the log file
 Log4g.clear_log_file()
@@ -155,6 +155,6 @@ Log4g.clear_log_file()
 
 ```gdscript
 # Convert between log levels and strings
-var level = Log4g.log_level_from_string("DEBUG")  # Returns LogLevel.Level.DEBUG
-var name = Log4g.log_level_to_string(LogLevel.Level.ERROR)  # Returns "ERROR"
+var level: LogLevel.Level = Log4g.log_level_from_string(&"DEBUG")  # Returns LogLevel.Level.DEBUG
+var name: String = Log4g.log_level_to_string(LogLevel.Level.ERROR)  # Returns "ERROR"
 ```

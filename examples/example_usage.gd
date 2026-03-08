@@ -7,7 +7,7 @@ extends Node
 
 # Example of how to use the Advanced Logger plugin
 @onready
-var log4g: LoggerInstance = Log4g.get_logger("COSTUM", LogLevel.Level.TRACE)
+var log4g: LoggerInstance = Log4g.get_logger(&"COSTUM", LogLevel.Level.TRACE)
 
 func _ready() -> void:
 	# Configure the global logger
@@ -24,9 +24,9 @@ func _ready() -> void:
 	log4g.trace("This trace message won't show (below global level)")
 	
 	# Create named loggers for different systems
-	var network_logger: LoggerInstance = Log4g.get_logger("Network", LogLevel.Level.INFO)
-	var ai_logger: LoggerInstance = Log4g.get_logger("AI", LogLevel.Level.DEBUG)
-	var physics_logger: LoggerInstance = Log4g.get_logger("Physics", LogLevel.Level.WARN)
+	var network_logger: LoggerInstance = Log4g.get_logger(&"Network", LogLevel.Level.INFO)
+	var ai_logger: LoggerInstance = Log4g.get_logger(&"AI", LogLevel.Level.DEBUG)
+	var physics_logger: LoggerInstance = Log4g.get_logger(&"Physics", LogLevel.Level.WARN)
 	
 	# Use named loggers
 	network_logger.info("Connected to server")
@@ -59,9 +59,9 @@ func demonstrate_logger_management() -> void:
 	log4g.info("=== Logger Management Demo ===")
 	
 	# Create some loggers
-	var ui_logger: LoggerInstance = Log4g.get_logger("UI")
-	var sound_logger: LoggerInstance = Log4g.get_logger("Sound")
-	var save_logger: LoggerInstance = Log4g.get_logger("SaveSystem")
+	var ui_logger: LoggerInstance = Log4g.get_logger(&"UI")
+	var sound_logger: LoggerInstance = Log4g.get_logger(&"Sound")
+	var save_logger: LoggerInstance = Log4g.get_logger(&"SaveSystem")
 	
 	# List all loggers
 	var loggers: Array[String] = Log4g.list_loggers()
@@ -78,7 +78,7 @@ func demonstrate_logger_management() -> void:
 	ui_logger.warn("This will show")
 	
 	# Remove a logger
-	Log4g.remove_logger("Sound")
+	Log4g.remove_logger(&"Sound")
 	log4g.info("Removed Sound logger. Active loggers: " + str(Log4g.list_loggers()))
 
 func _input(event: InputEvent) -> void:

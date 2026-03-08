@@ -9,7 +9,7 @@ var test_file_path: String = "user://test_logger_instance.log"
 class MockLogOutput extends LogOutput:
 	var logged_messages: Array[Dictionary] = []
 	
-	func output_log(logger_name: String, level: LogLevel.Level, message: String) -> void:
+	func output_log(logger_name: StringName, level: LogLevel.Level, message: String) -> void:
 		logged_messages.append({
 			"logger_name": logger_name,
 			"level": level,
