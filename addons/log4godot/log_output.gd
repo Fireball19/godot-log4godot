@@ -3,7 +3,16 @@
 ## This class coordinates between the formatter and file handler to produce
 ## log output to both the console and optionally to a file. It handles
 ## colored console output using BBCode and plain text file output.
+## It also emits signals for editor panel integration.
 class_name LogOutput
+
+## Emitted when a log message is output. Used by the editor panel.
+## [br][br]
+## [param timestamp]: The formatted timestamp string.
+## [param logger_name]: The name of the logger that produced the message.
+## [param level]: The log level of the message.
+## [param message]: The actual log message content.
+signal log_emitted(timestamp: String, logger_name: StringName, level: LogLevel.Level, message: String)
 
 ## Whether colored output is enabled for console logging.
 ## When enabled, uses BBCode formatting with [method print_rich].
@@ -62,11 +71,23 @@ func get_theme() -> LogTheme:
 
 ## Outputs a log message to all configured destinations.
 ## Sends colored output to the console (if colors enabled) and plain text to file (if enabled).
+## Also sends to the editor via EngineDebugger for the Log4Godot panel.
 ## [br][br]
 ## [param logger_name]: The name of the logger producing the message.
 ## [param level]: The [enum LogLevel.Level] of the message.
 ## [param message]: The actual log message content.
 func output_log(logger_name: StringName, level: LogLevel.Level, message: String) -> void:
+	# Get timestamp from formatter (single source of truth)
+	var timestamp: String = formatter.get_timestamp()
+	
+	# Emit signal for editor panel (works when in same process)
+	log_emitted.emit(timestamp, logger_name, level, message)
+	
+	# Send to editor via EngineDebugger (the proper way to communicate with editor)
+	# This uses the same mechanism as Godot's built-in Output panel
+	if EngineDebugger.is_active():
+		EngineDebugger.send_message("log4godot:log_entry", [timestamp, String(logger_name), level, message])
+	
 	# Console output (with colors if enabled)
 	_output_to_console(logger_name, level, message)
 	

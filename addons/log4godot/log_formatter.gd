@@ -8,9 +8,9 @@ class_name LogFormatter
 ## Whether timestamps should be included in formatted messages.
 var enable_timestamps: bool = true
 
-## Format string for timestamps using printf-style formatting.
-## Default format: [HH:MM:SS.mmm]
-var timestamp_format: String = "[%02d:%02d:%02d.%03d]"
+## Base format string for timestamps using printf-style formatting.
+## Format: HH:MM:SS.mmm
+const TIMESTAMP_BASE_FORMAT: String = "%02d:%02d:%02d.%03d"
 
 ## The current theme used for colorizing log messages.
 var current_theme: LogTheme
@@ -42,6 +42,13 @@ func set_theme(theme: LogTheme) -> void:
 ## Returns the current [LogTheme] being used for formatting.
 func get_theme() -> LogTheme:
 	return current_theme
+
+## Returns a formatted timestamp string using the current system time.
+## [br][br]
+## Returns a timestamp in the format HH:MM:SS.mmm (without brackets).
+func get_timestamp() -> String:
+	var time: Dictionary = Time.get_datetime_dict_from_system()
+	return TIMESTAMP_BASE_FORMAT % [time.hour, time.minute, time.second, Time.get_ticks_msec() % 1000]
 
 ## Formats a log message as plain text without color codes.
 ## [br][br]
@@ -97,12 +104,12 @@ func format_message_with_colors(logger_name: StringName, level: LogLevel.Level, 
 	
 	return " ".join(parts)
 
-## Generates a formatted timestamp string using the current system time.
+## Generates a formatted timestamp string with brackets using the current system time.
 ## [br][br]
-## Returns a timestamp in the format specified by [member timestamp_format].
+## Returns a timestamp in the format [HH:MM:SS.mmm].
 func _format_timestamp() -> String:
 	var time: Dictionary = Time.get_datetime_dict_from_system()
-	return timestamp_format % [time.hour, time.minute, time.second, Time.get_ticks_msec() % 1000]
+	return "[" + TIMESTAMP_BASE_FORMAT % [time.hour, time.minute, time.second, Time.get_ticks_msec() % 1000] + "]"
 
 ## Wraps text in BBCode color tags.
 ## [br][br]

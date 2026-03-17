@@ -26,6 +26,13 @@ var manager: LoggerManager
 func _ready() -> void:
 	manager = LoggerManager.new()
 
+## Returns the internal LogOutput instance.
+## Used by the editor plugin to connect to log signals.
+## [br][br]
+## Returns the [LogOutput] instance used by the manager.
+func get_log_output() -> LogOutput:
+	return manager.output
+
 ## Sets the global minimum log level for all loggers.
 ## Messages below this level will be filtered out regardless of individual logger settings.
 ## [br][br]
