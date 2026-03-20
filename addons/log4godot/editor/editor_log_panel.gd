@@ -176,11 +176,12 @@ func _setup_bottom_toolbar() -> void:
 	bottom_toolbar.custom_minimum_size.y = 28
 	left_vbox.add_child(bottom_toolbar)
 	
-	# Search/filter box
+	# Search/filter box with icon
 	search_box = LineEdit.new()
 	search_box.placeholder_text = "Filter messages..."
 	search_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	search_box.clear_button_enabled = true
+	search_box.right_icon = EditorIconHelper.get_icon("Search")
 	search_box.text_changed.connect(_on_search_changed)
 	bottom_toolbar.add_child(search_box)
 
