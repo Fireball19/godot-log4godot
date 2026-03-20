@@ -570,3 +570,493 @@ func test_right_toolbar_has_separators() -> void:
 			separator_count += 1
 	# Should have 2 separators: one between row1/row2, one before level toggles
 	assert_int(separator_count).is_equal(2)
+	
+	
+# =============================================================================
+# Collapse Toggle Tests
+# =============================================================================
+ 
+func test_collapse_toggle_default_state() -> void:
+	assert_bool(panel.collapse_duplicates).is_false()
+	assert_bool(panel.collapse_button.button_pressed).is_false()
+ 
+ 
+func test_collapse_toggle_enables_collapse() -> void:
+	panel._on_collapse_toggled(true)
+	
+	assert_bool(panel.collapse_duplicates).is_true()
+ 
+ 
+func test_collapse_toggle_disables_collapse() -> void:
+	panel._on_collapse_toggled(true)
+	panel._on_collapse_toggled(false)
+	
+	assert_bool(panel.collapse_duplicates).is_false()
+ 
+ 
+# =============================================================================
+# Collapse Key Generation Tests
+# =============================================================================
+ 
+func test_get_collapse_key_format() -> void:
+	panel.add_log_entry("12:34:56.789", &"TestLogger", LogLevel.Level.INFO, "Test message")
+	
+	var entries: Array[LogBuffer.LogEntry] = panel.log_buffer.get_all_entries()
+	var key: String = panel._get_collapse_key(entries[0])
+	
+	assert_str(key).is_equal("TestLogger|2|Test message")  # INFO = 2
+ 
+ 
+func test_get_collapse_key_different_messages() -> void:
+	panel.add_log_entry("12:34:56.001", &"Logger", LogLevel.Level.INFO, "Message A")
+	panel.add_log_entry("12:34:56.002", &"Logger", LogLevel.Level.INFO, "Message B")
+	
+	var entries: Array[LogBuffer.LogEntry] = panel.log_buffer.get_all_entries()
+	var key1: String = panel._get_collapse_key(entries[0])
+	var key2: String = panel._get_collapse_key(entries[1])
+	
+	assert_str(key1).is_not_equal(key2)
+ 
+ 
+func test_get_collapse_key_same_messages() -> void:
+	panel.add_log_entry("12:34:56.001", &"Logger", LogLevel.Level.INFO, "Same message")
+	panel.add_log_entry("12:34:56.002", &"Logger", LogLevel.Level.INFO, "Same message")
+	
+	var entries: Array[LogBuffer.LogEntry] = panel.log_buffer.get_all_entries()
+	var key1: String = panel._get_collapse_key(entries[0])
+	var key2: String = panel._get_collapse_key(entries[1])
+	
+	assert_str(key1).is_equal(key2)
+ 
+ 
+# =============================================================================
+# Entry Match Tests
+# =============================================================================
+ 
+func test_entries_match_for_collapse_identical() -> void:
+	panel.add_log_entry("12:34:56.001", &"Logger", LogLevel.Level.INFO, "Message")
+	panel.add_log_entry("12:34:56.002", &"Logger", LogLevel.Level.INFO, "Message")
+	
+	var entries: Array[LogBuffer.LogEntry] = panel.log_buffer.get_all_entries()
+	
+	assert_bool(panel._entries_match_for_collapse(entries[0], entries[1])).is_true()
+ 
+ 
+func test_entries_match_for_collapse_different_message() -> void:
+	panel.add_log_entry("12:34:56.001", &"Logger", LogLevel.Level.INFO, "Message A")
+	panel.add_log_entry("12:34:56.002", &"Logger", LogLevel.Level.INFO, "Message B")
+	
+	var entries: Array[LogBuffer.LogEntry] = panel.log_buffer.get_all_entries()
+	
+	assert_bool(panel._entries_match_for_collapse(entries[0], entries[1])).is_false()
+ 
+ 
+func test_entries_match_for_collapse_different_level() -> void:
+	panel.add_log_entry("12:34:56.001", &"Logger", LogLevel.Level.INFO, "Message")
+	panel.add_log_entry("12:34:56.002", &"Logger", LogLevel.Level.DEBUG, "Message")
+	
+	var entries: Array[LogBuffer.LogEntry] = panel.log_buffer.get_all_entries()
+	
+	assert_bool(panel._entries_match_for_collapse(entries[0], entries[1])).is_false()
+ 
+ 
+func test_entries_match_for_collapse_different_logger() -> void:
+	panel.add_log_entry("12:34:56.001", &"Logger1", LogLevel.Level.INFO, "Message")
+	panel.add_log_entry("12:34:56.002", &"Logger2", LogLevel.Level.INFO, "Message")
+	
+	var entries: Array[LogBuffer.LogEntry] = panel.log_buffer.get_all_entries()
+	
+	assert_bool(panel._entries_match_for_collapse(entries[0], entries[1])).is_false()
+ 
+ 
+# =============================================================================
+# Collapse Display Tests
+# =============================================================================
+ 
+func test_collapse_shows_count_for_duplicates() -> void:
+	panel._on_collapse_toggled(true)
+	
+	panel.add_log_entry("12:34:56.001", &"Test", LogLevel.Level.INFO, "Same message")
+	panel.add_log_entry("12:34:56.002", &"Test", LogLevel.Level.INFO, "Same message")
+	panel.add_log_entry("12:34:56.003", &"Test", LogLevel.Level.INFO, "Same message")
+	
+	await get_tree().process_frame
+	
+	var display_text: String = panel.log_display.get_parsed_text()
+	
+	# Should show count indicator
+	assert_str(display_text).contains("(x3)")
+	# Should only show one instance of the message
+	assert_int(display_text.count("Same message")).is_equal(1)
+ 
+ 
+func test_collapse_no_count_for_single_message() -> void:
+	panel._on_collapse_toggled(true)
+	
+	panel.add_log_entry("12:34:56.001", &"Test", LogLevel.Level.INFO, "Single message")
+	
+	await get_tree().process_frame
+	
+	var display_text: String = panel.log_display.get_parsed_text()
+	
+	# Should not show count indicator for single message
+	assert_str(display_text).not_contains("(x")
+	assert_str(display_text).contains("Single message")
+ 
+ 
+func test_collapse_groups_consecutive_duplicates() -> void:
+	panel._on_collapse_toggled(true)
+	
+	panel.add_log_entry("12:34:56.001", &"Test", LogLevel.Level.INFO, "Message A")
+	panel.add_log_entry("12:34:56.002", &"Test", LogLevel.Level.INFO, "Message A")
+	panel.add_log_entry("12:34:56.003", &"Test", LogLevel.Level.INFO, "Message B")
+	panel.add_log_entry("12:34:56.004", &"Test", LogLevel.Level.INFO, "Message B")
+	panel.add_log_entry("12:34:56.005", &"Test", LogLevel.Level.INFO, "Message B")
+	
+	await get_tree().process_frame
+	
+	var display_text: String = panel.log_display.get_parsed_text()
+	
+	assert_str(display_text).contains("Message A")
+	assert_str(display_text).contains("(x2)")
+	assert_str(display_text).contains("Message B")
+	assert_str(display_text).contains("(x3)")
+ 
+ 
+func test_collapse_does_not_group_non_consecutive_duplicates() -> void:
+	panel._on_collapse_toggled(true)
+	
+	panel.add_log_entry("12:34:56.001", &"Test", LogLevel.Level.INFO, "Message A")
+	panel.add_log_entry("12:34:56.002", &"Test", LogLevel.Level.INFO, "Message B")
+	panel.add_log_entry("12:34:56.003", &"Test", LogLevel.Level.INFO, "Message A")
+	
+	await get_tree().process_frame
+	
+	var display_text: String = panel.log_display.get_parsed_text()
+	
+	# "Message A" should appear twice (not collapsed since not consecutive)
+	assert_int(display_text.count("Message A")).is_equal(2)
+	assert_str(display_text).not_contains("(x2)")
+ 
+ 
+func test_collapse_disabled_shows_all_entries() -> void:
+	panel._on_collapse_toggled(false)
+	
+	panel.add_log_entry("12:34:56.001", &"Test", LogLevel.Level.INFO, "Same message")
+	panel.add_log_entry("12:34:56.002", &"Test", LogLevel.Level.INFO, "Same message")
+	panel.add_log_entry("12:34:56.003", &"Test", LogLevel.Level.INFO, "Same message")
+	
+	await get_tree().process_frame
+	
+	var display_text: String = panel.log_display.get_parsed_text()
+	
+	# Should show all three instances
+	assert_int(display_text.count("Same message")).is_equal(3)
+	assert_str(display_text).not_contains("(x")
+ 
+ 
+# =============================================================================
+# Collapse with Filters Tests
+# =============================================================================
+ 
+func test_collapse_respects_level_filter() -> void:
+	panel._on_collapse_toggled(true)
+	
+	panel.add_log_entry("12:34:56.001", &"Test", LogLevel.Level.DEBUG, "Debug message")
+	panel.add_log_entry("12:34:56.002", &"Test", LogLevel.Level.DEBUG, "Debug message")
+	panel.add_log_entry("12:34:56.003", &"Test", LogLevel.Level.INFO, "Info message")
+	panel.add_log_entry("12:34:56.004", &"Test", LogLevel.Level.INFO, "Info message")
+	
+	# Disable DEBUG level
+	panel.level_toggles[LogLevel.Level.DEBUG] = false
+	panel._refresh_display()
+	
+	await get_tree().process_frame
+	
+	var display_text: String = panel.log_display.get_parsed_text()
+	
+	# Should only show INFO messages collapsed
+	assert_str(display_text).not_contains("Debug message")
+	assert_str(display_text).contains("Info message")
+	assert_str(display_text).contains("(x2)")
+ 
+ 
+func test_collapse_respects_logger_filter() -> void:
+	panel._on_collapse_toggled(true)
+	
+	panel.add_log_entry("12:34:56.001", &"Logger1", LogLevel.Level.INFO, "Message")
+	panel.add_log_entry("12:34:56.002", &"Logger1", LogLevel.Level.INFO, "Message")
+	panel.add_log_entry("12:34:56.003", &"Logger2", LogLevel.Level.INFO, "Message")
+	panel.add_log_entry("12:34:56.004", &"Logger2", LogLevel.Level.INFO, "Message")
+	
+	# Filter to Logger1 only
+	panel.current_logger_filter = &"Logger1"
+	panel._refresh_display()
+	
+	await get_tree().process_frame
+	
+	var display_text: String = panel.log_display.get_parsed_text()
+	
+	# Should only show Logger1 messages collapsed
+	assert_str(display_text).contains("Logger1")
+	assert_str(display_text).contains("(x2)")
+	assert_str(display_text).not_contains("Logger2")
+ 
+ 
+func test_collapse_respects_search_filter() -> void:
+	panel._on_collapse_toggled(true)
+	
+	panel.add_log_entry("12:34:56.001", &"Test", LogLevel.Level.INFO, "Hello world")
+	panel.add_log_entry("12:34:56.002", &"Test", LogLevel.Level.INFO, "Hello world")
+	panel.add_log_entry("12:34:56.003", &"Test", LogLevel.Level.INFO, "Goodbye world")
+	panel.add_log_entry("12:34:56.004", &"Test", LogLevel.Level.INFO, "Goodbye world")
+	
+	# Search for "Hello"
+	panel.current_search_filter = "Hello"
+	panel._refresh_display()
+	
+	await get_tree().process_frame
+	
+	var display_text: String = panel.log_display.get_parsed_text()
+	
+	# Should only show "Hello world" messages collapsed
+	assert_str(display_text).contains("Hello world")
+	assert_str(display_text).contains("(x2)")
+	assert_str(display_text).not_contains("Goodbye")
+ 
+ 
+# =============================================================================
+# Entry Count with Collapse Tests
+# =============================================================================
+ 
+func test_entry_count_shows_collapsed_count() -> void:
+	panel._on_collapse_toggled(true)
+	
+	panel.add_log_entry("12:34:56.001", &"Test", LogLevel.Level.INFO, "Same message")
+	panel.add_log_entry("12:34:56.002", &"Test", LogLevel.Level.INFO, "Same message")
+	panel.add_log_entry("12:34:56.003", &"Test", LogLevel.Level.INFO, "Same message")
+	
+	await get_tree().process_frame
+	
+	# Format should be "collapsed (actual) / total" when different
+	# With 3 identical messages collapsed to 1, should show "1 (3) / 3"
+	assert_str(panel.entry_count_label.text).is_equal("1 (3) / 3")
+ 
+ 
+func test_entry_count_no_special_format_when_all_unique() -> void:
+	panel._on_collapse_toggled(true)
+	
+	panel.add_log_entry("12:34:56.001", &"Test", LogLevel.Level.INFO, "Message 1")
+	panel.add_log_entry("12:34:56.002", &"Test", LogLevel.Level.INFO, "Message 2")
+	panel.add_log_entry("12:34:56.003", &"Test", LogLevel.Level.INFO, "Message 3")
+	
+	await get_tree().process_frame
+	
+	# All unique, no collapsing happened
+	assert_str(panel.entry_count_label.text).is_equal("3 entries")
+ 
+ 
+func test_entry_count_collapse_disabled() -> void:
+	panel._on_collapse_toggled(false)
+	
+	panel.add_log_entry("12:34:56.001", &"Test", LogLevel.Level.INFO, "Same message")
+	panel.add_log_entry("12:34:56.002", &"Test", LogLevel.Level.INFO, "Same message")
+	panel.add_log_entry("12:34:56.003", &"Test", LogLevel.Level.INFO, "Same message")
+	
+	await get_tree().process_frame
+	
+	# Collapse disabled, should show normal count
+	assert_str(panel.entry_count_label.text).is_equal("3 entries")
+ 
+ 
+# =============================================================================
+# Real-time Collapse Update Tests
+# =============================================================================
+ 
+func test_realtime_collapse_increments_count() -> void:
+	panel._on_collapse_toggled(true)
+	
+	panel.add_log_entry("12:34:56.001", &"Test", LogLevel.Level.INFO, "Repeating message")
+	await get_tree().process_frame
+	
+	var display_text1: String = panel.log_display.get_parsed_text()
+	assert_str(display_text1).not_contains("(x")
+	
+	panel.add_log_entry("12:34:56.002", &"Test", LogLevel.Level.INFO, "Repeating message")
+	await get_tree().process_frame
+	
+	var display_text2: String = panel.log_display.get_parsed_text()
+	assert_str(display_text2).contains("(x2)")
+ 
+ 
+func test_realtime_new_unique_message_starts_new_group() -> void:
+	panel._on_collapse_toggled(true)
+	
+	panel.add_log_entry("12:34:56.001", &"Test", LogLevel.Level.INFO, "First message")
+	panel.add_log_entry("12:34:56.002", &"Test", LogLevel.Level.INFO, "First message")
+	
+	await get_tree().process_frame
+	
+	var display_text1: String = panel.log_display.get_parsed_text()
+	assert_str(display_text1).contains("(x2)")
+	assert_int(display_text1.count("First message")).is_equal(1)
+	
+	panel.add_log_entry("12:34:56.003", &"Test", LogLevel.Level.INFO, "Second message")
+	
+	await get_tree().process_frame
+	
+	var display_text2: String = panel.log_display.get_parsed_text()
+	assert_str(display_text2).contains("Second message")
+	assert_int(display_text2.count("First message")).is_equal(1)
+	assert_int(display_text2.count("Second message")).is_equal(1)
+ 
+ 
+# =============================================================================
+# Toggle Collapse On/Off Tests
+# =============================================================================
+ 
+func test_toggle_collapse_on_collapses_existing_entries() -> void:
+	# Start with collapse disabled
+	panel._on_collapse_toggled(false)
+	
+	panel.add_log_entry("12:34:56.001", &"Test", LogLevel.Level.INFO, "Same message")
+	panel.add_log_entry("12:34:56.002", &"Test", LogLevel.Level.INFO, "Same message")
+	panel.add_log_entry("12:34:56.003", &"Test", LogLevel.Level.INFO, "Same message")
+	
+	await get_tree().process_frame
+	
+	var display_before: String = panel.log_display.get_parsed_text()
+	assert_int(display_before.count("Same message")).is_equal(3)
+	
+	# Enable collapse
+	panel._on_collapse_toggled(true)
+	
+	await get_tree().process_frame
+	
+	var display_after: String = panel.log_display.get_parsed_text()
+	assert_int(display_after.count("Same message")).is_equal(1)
+	assert_str(display_after).contains("(x3)")
+ 
+ 
+func test_toggle_collapse_off_expands_entries() -> void:
+	# Start with collapse enabled
+	panel._on_collapse_toggled(true)
+	
+	panel.add_log_entry("12:34:56.001", &"Test", LogLevel.Level.INFO, "Same message")
+	panel.add_log_entry("12:34:56.002", &"Test", LogLevel.Level.INFO, "Same message")
+	panel.add_log_entry("12:34:56.003", &"Test", LogLevel.Level.INFO, "Same message")
+	
+	await get_tree().process_frame
+	
+	var display_before: String = panel.log_display.get_parsed_text()
+	assert_int(display_before.count("Same message")).is_equal(1)
+	assert_str(display_before).contains("(x3)")
+	
+	# Disable collapse
+	panel._on_collapse_toggled(false)
+	
+	await get_tree().process_frame
+	
+	var display_after: String = panel.log_display.get_parsed_text()
+	assert_int(display_after.count("Same message")).is_equal(3)
+	assert_str(display_after).not_contains("(x3)")
+ 
+ 
+# =============================================================================
+# Clear with Collapse Tests
+# =============================================================================
+ 
+func test_clear_resets_collapse_tracking() -> void:
+	panel._on_collapse_toggled(true)
+	
+	panel.add_log_entry("12:34:56.001", &"Test", LogLevel.Level.INFO, "Message")
+	panel.add_log_entry("12:34:56.002", &"Test", LogLevel.Level.INFO, "Message")
+	
+	await get_tree().process_frame
+	
+	assert_object(panel._last_displayed_entry).is_not_null()
+	assert_int(panel._last_entry_count).is_equal(2)
+	
+	panel._on_clear_pressed()
+	
+	await get_tree().process_frame
+	
+	assert_object(panel._last_displayed_entry).is_null()
+	assert_int(panel._last_entry_count).is_equal(0)
+ 
+ 
+# =============================================================================
+# Edge Cases
+# =============================================================================
+ 
+func test_collapse_empty_buffer() -> void:
+	panel._on_collapse_toggled(true)
+	panel._refresh_display()
+	
+	await get_tree().process_frame
+	
+	var display_text: String = panel.log_display.get_parsed_text()
+	assert_str(display_text).is_empty()
+ 
+ 
+func test_collapse_single_entry() -> void:
+	panel._on_collapse_toggled(true)
+	
+	panel.add_log_entry("12:34:56.001", &"Test", LogLevel.Level.INFO, "Only entry")
+	
+	await get_tree().process_frame
+	
+	var display_text: String = panel.log_display.get_parsed_text()
+	assert_str(display_text).contains("Only entry")
+	assert_str(display_text).not_contains("(x")
+ 
+ 
+func test_collapse_all_different_messages() -> void:
+	panel._on_collapse_toggled(true)
+	
+	panel.add_log_entry("12:34:56.001", &"Test", LogLevel.Level.INFO, "Message 1")
+	panel.add_log_entry("12:34:56.002", &"Test", LogLevel.Level.INFO, "Message 2")
+	panel.add_log_entry("12:34:56.003", &"Test", LogLevel.Level.INFO, "Message 3")
+	
+	await get_tree().process_frame
+	
+	var display_text: String = panel.log_display.get_parsed_text()
+	assert_str(display_text).contains("Message 1")
+	assert_str(display_text).contains("Message 2")
+	assert_str(display_text).contains("Message 3")
+	assert_str(display_text).not_contains("(x")
+ 
+ 
+func test_collapse_mixed_levels_same_message() -> void:
+	panel._on_collapse_toggled(true)
+	
+	# Same message but different levels should NOT be collapsed
+	panel.add_log_entry("12:34:56.001", &"Test", LogLevel.Level.INFO, "Message")
+	panel.add_log_entry("12:34:56.002", &"Test", LogLevel.Level.WARN, "Message")
+	panel.add_log_entry("12:34:56.003", &"Test", LogLevel.Level.ERROR, "Message")
+	
+	await get_tree().process_frame
+	
+	var display_text: String = panel.log_display.get_parsed_text()
+	
+	# Should show all three (different levels = different groups)
+	assert_int(display_text.count("Message")).is_equal(3)
+	assert_str(display_text).not_contains("(x")
+ 
+ 
+func test_collapse_mixed_loggers_same_message() -> void:
+	panel._on_collapse_toggled(true)
+	
+	# Same message but different loggers should NOT be collapsed
+	panel.add_log_entry("12:34:56.001", &"Logger1", LogLevel.Level.INFO, "Message")
+	panel.add_log_entry("12:34:56.002", &"Logger2", LogLevel.Level.INFO, "Message")
+	panel.add_log_entry("12:34:56.003", &"Logger3", LogLevel.Level.INFO, "Message")
+	
+	await get_tree().process_frame
+	
+	var display_text: String = panel.log_display.get_parsed_text()
+	
+	# Should show all three (different loggers = different groups)
+	assert_int(display_text.count("Message")).is_equal(3)
+	assert_str(display_text).not_contains("(x")
+ 

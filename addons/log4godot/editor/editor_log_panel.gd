@@ -38,6 +38,12 @@ var auto_scroll: bool = true
 ## Whether to collapse duplicate messages.
 var collapse_duplicates: bool = false
 
+## Tracks the last displayed entry for real-time collapse detection.
+var _last_displayed_entry: LogBuffer.LogEntry = null
+
+## Count of consecutive duplicates of the last entry (for real-time updates).
+var _last_entry_count: int = 0
+
 ## UI Components - Main layout
 var main_hbox: HBoxContainer
 var left_vbox: VBoxContainer
@@ -178,7 +184,7 @@ func _setup_bottom_toolbar() -> void:
 	
 	# Search/filter box with icon
 	search_box = LineEdit.new()
-	search_box.placeholder_text = "Filter messages..."
+	search_box.placeholder_text = "Filter messages"
 	search_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	search_box.clear_button_enabled = true
 	search_box.right_icon = EditorIconHelper.get_icon("Search")
@@ -356,14 +362,29 @@ func add_log_entry(timestamp: String, logger_name: StringName, level: LogLevel.L
 
 
 func _on_log_added(entry: LogBuffer.LogEntry) -> void:
-	# Check if entry passes current filters
-	if _entry_passes_filter(entry):
-		_append_entry_to_display(entry)
+	if not _entry_passes_filter(entry):
+		_update_entry_count()
+		return
+	
+	if collapse_duplicates and _last_displayed_entry != null:
+		if _entries_match_for_collapse(_last_displayed_entry, entry):
+			# Same as last displayed entry - need to update the count
+			_last_entry_count += 1
+			# Refresh to update the count display
+			_refresh_display()
+			return
+	
+	# New unique entry - append normally
+	_append_entry_to_display(entry)
+	_last_displayed_entry = entry
+	_last_entry_count = 1
 	_update_entry_count()
 
 
 func _on_buffer_cleared() -> void:
 	log_display.clear()
+	_last_displayed_entry = null
+	_last_entry_count = 0
 	_update_entry_count()
 
 
@@ -387,24 +408,76 @@ func _entry_passes_filter(entry: LogBuffer.LogEntry) -> bool:
 	return true
 
 
-func _append_entry_to_display(entry: LogBuffer.LogEntry) -> void:
+## Checks if two entries should be collapsed together.
+func _entries_match_for_collapse(a: LogBuffer.LogEntry, b: LogBuffer.LogEntry) -> bool:
+	return a.logger_name == b.logger_name and a.level == b.level and a.message == b.message
+
+
+## Returns a unique key for collapsing entries.
+func _get_collapse_key(entry: LogBuffer.LogEntry) -> String:
+	return "%s|%d|%s" % [entry.logger_name, entry.level, entry.message]
+
+
+## Appends a log entry to the display, optionally with a repeat count.
+func _append_entry_to_display(entry: LogBuffer.LogEntry, count: int = 1) -> void:
 	var color: Color = _level_colors.get(entry.level, Color.WHITE)
 	var level_str: String = LogLevel.level_to_string(entry.level)
 	
-	# Format: [timestamp] [LEVEL] [LoggerName] message
+	# Format: [timestamp] [LEVEL] [LoggerName] message (xN)
 	var formatted: String = "[color=#%s]" % color.to_html(false)
 	formatted += "[%s] [%s] [%s] %s" % [entry.timestamp, level_str, entry.logger_name, entry.message]
+	
+	# Add collapse count indicator if count > 1
+	if count > 1:
+		formatted += " (x%d)" % count
+	
 	formatted += "[/color]\n"
 	
 	log_display.append_text(formatted)
 
 
+## Refreshes the entire log display, applying all current filters.
 func _refresh_display() -> void:
 	log_display.clear()
+	_last_displayed_entry = null
+	_last_entry_count = 0
+	
 	var entries: Array[LogBuffer.LogEntry] = log_buffer.get_all_entries()
-	for entry: LogBuffer.LogEntry in entries:
-		if _entry_passes_filter(entry):
-			_append_entry_to_display(entry)
+	
+	if not collapse_duplicates:
+		# Original behavior - no collapsing
+		for entry: LogBuffer.LogEntry in entries:
+			if _entry_passes_filter(entry):
+				_append_entry_to_display(entry)
+				_last_displayed_entry = entry
+	else:
+		# Collapse duplicate messages
+		var current_entry: LogBuffer.LogEntry = null
+		var current_count: int = 0
+		
+		for entry: LogBuffer.LogEntry in entries:
+			if not _entry_passes_filter(entry):
+				continue
+			
+			if current_entry == null:
+				# First filtered entry
+				current_entry = entry
+				current_count = 1
+			elif _entries_match_for_collapse(current_entry, entry):
+				# Same as previous - increment count
+				current_count += 1
+			else:
+				# Different entry - display previous and start new group
+				_append_entry_to_display(current_entry, current_count)
+				current_entry = entry
+				current_count = 1
+		
+		# Display the last group if any
+		if current_entry != null:
+			_append_entry_to_display(current_entry, current_count)
+			_last_displayed_entry = current_entry
+			_last_entry_count = current_count
+	
 	_update_entry_count()
 
 
@@ -435,17 +508,44 @@ func _update_logger_dropdown() -> void:
 
 func _update_entry_count() -> void:
 	var filtered_count: int = 0
+	var collapsed_count: int = 0
 	var entries: Array[LogBuffer.LogEntry] = log_buffer.get_all_entries()
-	for entry: LogBuffer.LogEntry in entries:
-		if _entry_passes_filter(entry):
-			filtered_count += 1
 	
-	var total: int = log_buffer.get_entry_count()
-	
-	if filtered_count == total:
-		entry_count_label.text = "%d entries" % total
+	if not collapse_duplicates:
+		# Original behavior
+		for entry: LogBuffer.LogEntry in entries:
+			if _entry_passes_filter(entry):
+				filtered_count += 1
+		
+		var total: int = log_buffer.get_entry_count()
+		
+		if filtered_count == total:
+			entry_count_label.text = "%d entries" % total
+		else:
+			entry_count_label.text = "%d / %d" % [filtered_count, total]
 	else:
-		entry_count_label.text = "%d / %d" % [filtered_count, total]
+		# Count with collapsing
+		var last_key: String = ""
+		
+		for entry: LogBuffer.LogEntry in entries:
+			if not _entry_passes_filter(entry):
+				continue
+			
+			filtered_count += 1
+			var key: String = _get_collapse_key(entry)
+			if key != last_key:
+				collapsed_count += 1
+				last_key = key
+		
+		var total: int = log_buffer.get_entry_count()
+		
+		if filtered_count == total and collapsed_count == total:
+			entry_count_label.text = "%d entries" % total
+		elif collapsed_count == filtered_count:
+			entry_count_label.text = "%d / %d" % [filtered_count, total]
+		else:
+			# Show collapsed count: "collapsed (actual) / total"
+			entry_count_label.text = "%d (%d) / %d" % [collapsed_count, filtered_count, total]
 
 
 func _on_logger_filter_changed(index: int) -> void:
@@ -475,7 +575,6 @@ func _on_auto_scroll_toggled(enabled: bool) -> void:
 
 func _on_collapse_toggled(enabled: bool) -> void:
 	collapse_duplicates = enabled
-	# TODO: Implement collapse duplicates feature
 	_refresh_display()
 
 
